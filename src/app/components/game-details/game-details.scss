@@ -1,0 +1,21 @@
+:host {
+  ::ng-deep .p-galleria-thumbnail-wrapper,
+  ::ng-deep .p-galleria-thumbnail-item {
+    background-color: transparent !important;
+    border: none !important; /* remove borders if any */
+    box-shadow: none !important; /* remove shadows if any */
+  }
+
+  ::ng-deep .custom-panel .p-panel-title {
+    font-size: 25px; /* Tailwind font size */
+  }
+
+  /* Default icon */
+  .played-btn i {
+    transition: 0.2s ease;
+  }
+
+  ::ng-deep .p-galleria {
+    border: none;
+  }
+}

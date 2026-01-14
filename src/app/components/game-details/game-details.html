@@ -1,0 +1,181 @@
+<div class="flex flex-col w-full p-12">
+  @if(game){
+  <div class="relative w-full mt-4 p-4 rounded-3xl overflow-hidden">
+    <!-- Background Image -->
+    <div
+      class="absolute inset-0 bg-cover bg-center filter blur-lg opacity-30"
+      [ngStyle]="{ 'background-image': 'url(' + game.background_image + ')' }"
+    ></div>
+
+    <!-- Content Layer -->
+    <div class="relative flex flex-col md:flex-row gap-6">
+      <!-- Left Content -->
+      <div class="flex-1 flex flex-col pt-2 text-white">
+        <div class="flex gap-2 text-xl items-center">
+          <div class="border border-solid bg-white rounded-md text-black p-1 mr-2">
+            {{ game.released | date: 'MMMM d, y' }}
+          </div>
+          <div class="flex gap-2">
+            @for (platform of game.parent_platforms; track $index) {
+            <i class="{{ platform.platform.name | platformIcon }}"></i>
+            }
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <h1 class="text-5xl">{{ game.name }}</h1>
+        </div>
+
+        @if(game.metacritic){
+        <div class="pt-6">
+          <p-chip label="Metacritic" class="text-m !text-[#D48806] !bg-[#132b6e] !px-3 !py-1 flex items-center !gap-1">
+            <b
+              class="inline-flex items-center justify-center w-8 h-8 border border-black rounded-full bg-[#D48806] text-black text-m"
+            >
+              {{ game.metacritic }}
+            </b>
+          </p-chip>
+        </div>
+        }
+
+        <div class="flex gap-2 pt-8 items-center">
+          <button
+            (click)="gameInLibrary ? removeFromLibrary(game) : addToLibrary(game)"
+            pButton
+            class="played-btn h-11 text-sm rounded-full p-2 w-11"
+            [ngClass]="gameInLibrary ? 'bg-[#D48806] hover:bg-[#9e6707] border border-solid border-[#D48806]' : '!bg-transparent border border-solid hover:bg-[#D48806]' "
+          >
+            <i class="fa-solid fa-bookmark text-xl" [pTooltip]="gameInLibrary ? 'In Library' : 'Add to Library'"></i>
+          </button>
+
+          @if(!gameInLibrary){
+          <button
+            pButton
+            class="played-btn h-11 text-sm rounded-full p-2 w-11"
+            [ngClass]="isInWishlist(game.id) ? 'bg-[#8d1f1f] hover:bg-[#740e0e] border border-solid border-[#8d1f1f]' : '!bg-transparent border border-solid hover:bg-[#740e0e]' "
+            (click)="isInWishlist(game.id) ? removeFromWishlist(game.id) : addToWishlist(game)"
+          >
+            <i
+              class="fa-solid fa-heart text-xl"
+              [pTooltip]="isInWishlist(game.id) ? 'In Wishlist' : 'Add to Wishlist'"
+            ></i>
+          </button>
+          }
+          <button
+            pButton
+            class="played-btn w-11 h-11 text-sm border border-solid rounded-full hover:bg-green-500"
+            [ngClass]="gameInLibrary?.played ? '!bg-green-600 hover:bg-red-700 border border-solid border-green-600' : '!bg-transparent border border-solid hover:bg-green-600'"
+            pTooltip="Add to Played"
+            tooltipPosition="bottom"
+            (click)="gameInLibrary?.played ? updatePlayed(game) : displayCompletedDialog = true"
+          >
+            <i class="fas fa-check text-xl"></i>
+          </button>
+        </div>
+
+        <div class="pt-4 flex items-center gap-2">
+          <i class="fa-regular fa-clock"></i>
+          <span>Time Played: {{gameInLibrary?.hoursPlayed}} hours</span>
+        </div>
+        <div class="pt-4 flex items-center gap-2">
+          <i class="fa-solid fa-gamepad"></i>
+          <span>Played on: {{ gameInLibrary?.platform | uppercase}}</span>
+          <i [class]="gameInLibrary?.platform | platformIcon"></i>
+        </div>
+        <div class="flex gap-2 pt-6">
+          @for(genre of game.genres; track $index){
+          <p-tag [value]="genre.name" severity="secondary" class="w-18" [rounded]="true" />
+          }
+        </div>
+      </div>
+      <div class="hidden md:block">
+        <p-galleria
+          [value]="screenshots"
+          [circular]="true"
+          [showItemNavigators]="screenshots.length > 1 ? true : false"
+          [showThumbnails]="false"
+          [containerStyle]="{ 'max-width': '640px' }"
+          [numVisible]="5"
+        >
+          <ng-template pTemplate="item" let-screenshot>
+            <img [src]="screenshot.image" class="h-[350px] w-[650px]" />
+          </ng-template>
+        </p-galleria>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col lg:flex-row justify-center gap-2 pt-8 h-full">
+    <div class="flex-[2]">
+      <p-panel header="Description" [styleClass]="'!rounded-3xl custom-panel'">
+        <p><app-truncate-text [text]="game.description_raw | beforeSpanish" [limit]="1000"></app-truncate-text></p>
+      </p-panel>
+    </div>
+
+    <div class="flex-[1]">
+      <p-panel header="Details" [styleClass]="'!rounded-3xl custom-panel'">
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col">
+            <span class="underline">Official Website</span>
+            <a [href]="game.website" target="_blank" class="text-[#41a4f5] hover:text-[#145299]">{{game.website}}</a>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="underline">Developers</span>
+            @for(developer of game.developers; track developer.id){
+            <span>{{developer.name}}</span>
+            }
+          </div>
+
+          <div class="flex flex-col">
+            <span class="underline">Publisher</span>
+            @for(publisher of game.publishers; track publisher.id){
+            <span>{{publisher.name}}</span>
+            }
+          </div>
+
+          <div class="flex flex-col">
+            <span class="underline">Released</span>
+            <span>{{game.released | date: 'MMMM d, y' }}</span>
+          </div>
+
+          <div class="flex flex-col">
+            <span class="underline">Age rating</span>
+            @if(game.esrb_rating){
+            <span>{{game.esrb_rating.name | esrbAge}}</span>
+            } @else{
+            <span>Not rated</span>
+            }
+          </div>
+
+          <div class="flex flex-col justify-center">
+            <span class="underline pb-2">Where to buy</span>
+            <div class="flex flex-wrap gap-2">
+              @for(store of stores; track store.id){
+              <a [href]="store.url" target="_blank">
+                <button
+                  pButton
+                  class="bg-[#2D2D2D] border border-solid border-[#2D2D2D] hover:bg-[#0E1330] justify-center w-[150px] rounded-md p-2 flex items-center gap-2"
+                >
+                  <i class="{{ (store.url | findStoreByUrl).icon }}"></i>
+                  <span>{{ (store.url | findStoreByUrl).name }}</span>
+                </button>
+              </a>
+              }
+            </div>
+          </div>
+        </div>
+      </p-panel>
+    </div>
+  </div>
+  }
+</div>
+
+@if(displayCompletedDialog){
+<app-complete-dialog
+  [title]="'Game Completion Details'"
+  [selectedGame]="game"
+  (closeDialog)="displayCompletedDialog = $event"
+  (updateCurrentlyPlaying)="game = $event"
+></app-complete-dialog>
+}

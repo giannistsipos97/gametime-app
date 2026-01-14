@@ -1,0 +1,12 @@
+<!-- Wrapper with custom background color (e.g., bg-blue-600) -->
+<div class="flex items-center justify-between w-full h-full bg-slate-700 p-2 rounded-t">
+  <h3 class="m-0 text-l font-bold text-white">{{ title }}</h3>
+  <button
+    pButton
+    icon="pi pi-times"
+    (click)="onClose()"
+    pTooltip="Close"
+    tooltipPosition="bottom"
+    class="w-8 h-8 !p-0 !bg-red-500 !text-white !border-none hover:!bg-red-600 rounded-none flex items-center justify-center"
+  ></button>
+</div>

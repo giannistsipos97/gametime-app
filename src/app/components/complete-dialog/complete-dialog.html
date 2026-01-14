@@ -1,0 +1,81 @@
+<p-dialog
+  [visible]="true"
+  [modal]="true"
+  [draggable]="true"
+  [closable]="false"
+  [showHeader]="false"
+  [style]="{ width: '30rem' }"
+>
+  <!-- <ng-template #header> -->
+  <app-dialog-header [title]="title" (close)="onClose()"></app-dialog-header>
+  <!-- </ng-template> -->
+  <ng-template #content>
+    <form
+      [formGroup]="gameForm"
+      (ngSubmit)="onSubmit()"
+      #myForm="ngForm"
+      id="gameForm"
+      class="w-full flex flex-col gap-4 p-4"
+    >
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
+        <label for="platform" class="font-bold whitespace-nowrap">Platform* </label>
+        <p-select
+          [options]="platforms"
+          formControlName="platform"
+          inputId="platform"
+          placeholder="Select Platforms"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-[13rem] md:w-54 !rounded-3xl"
+          display="chip"
+          appendTo="body"
+          showClear="true"
+          (onChange)="selectPlatform($event)"
+          [styleClass]="(gameForm.get('platform')?.invalid && gameForm.get('platform')?.touched) 
+                ? 'w-[13rem] md:w-54 !rounded-3xl !border-red-500' 
+                : 'w-[13rem] md:w-54 !rounded-3xl'"
+        >
+          <ng-template let-platform pTemplate="item">
+            <div class="flex items-center gap-2">
+              <i class="{{platform.icon}}" style="width: 20px"></i>
+              <div>{{ platform.label }}</div>
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <!-- Completion Date Field -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
+        <label for="completionDate" class="font-bold whitespace-nowrap">Completion Date* </label>
+        <p-datepicker
+          formControlName="completionDate"
+          inputId="completionDate"
+          appendTo="body"
+          [style]="{'width':'100%'}"
+          [inputStyle]="{'width':'100%'}"
+          [styleClass]="(gameForm.get('completionDate')?.invalid && gameForm.get('completionDate')?.touched) 
+                ? 'w-[13rem] md:w-54 !rounded-3xl !border-red-500' 
+                : 'w-[13rem] md:w-54 !rounded-3xl'"
+        >
+        </p-datepicker>
+      </div>
+
+      <!-- Hours Played Field -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
+        <label for="hoursPlayed" class="font-bold whitespace-nowrap">Hours Played </label>
+        <p-inputnumber
+          formControlName="hoursPlayed"
+          inputId="hoursPlayed"
+          mode="decimal"
+          [useGrouping]="false"
+          [min]="0"
+          [allowEmpty]="true"
+          class="w-full sm:w-auto"
+        >
+        </p-inputnumber>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template #footer>
+    <button pButton type="submit" label="Submit" form="gameForm" [disabled]="gameForm.invalid"></button>
+  </ng-template>
+</p-dialog>

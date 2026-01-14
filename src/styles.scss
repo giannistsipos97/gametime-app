@@ -1,1 +1,51 @@
 /* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import 'primeicons/primeicons.css';
+
+* {
+  outline: none;
+}
+
+/* Light mode (default) */
+button.dark-mode-toggle {
+  background-color: #1a4fae;
+  color: white;
+}
+
+button.dark-mode-toggle:hover {
+  background-color: #163e8c;
+}
+
+/* Dark mode */
+html.my-app-dark button.dark-mode-toggle {
+  background-color: #f39c12; /* example: orange */
+  color: black;
+}
+
+html.my-app-dark button.dark-mode-toggle:hover {
+  background-color: #d48806;
+}
+
+/* hide default scrollbar */
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* custom scrollbar */
+.scrollbar-custom::-webkit-scrollbar {
+  height: 8px; /* for horizontal */
+}
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: #1f2937; /* track color */
+  border-radius: 2rem;
+}
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: #445ce3; /* thumb color */
+  border-radius: 2rem;
+}

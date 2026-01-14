@@ -1,0 +1,7 @@
+<!-- Case 1 & 2: text content -->
+<span> {{ expanded || text.length <= limit ? text : (text | slice: 0 : limit) + '...' }} </span>
+
+<!-- Toggle only if text is longer than limit -->
+<span *ngIf="text.length > limit" (click)="toggle()" class="toggle cursor-pointer font-bold">
+  {{ expanded ? ' Show less' : ' Show more' }}
+</span>

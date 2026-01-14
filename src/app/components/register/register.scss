@@ -1,0 +1,13 @@
+.container-form {
+  min-height: calc(100vh - 150px);
+}
+
+.p-inputtext {
+  border-radius: 20px;
+}
+
+@media (max-width: 670px) {
+  .container-form {
+    min-height: calc(100vh - 200px);
+  }
+}

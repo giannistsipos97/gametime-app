@@ -1,0 +1,10 @@
+@media (max-width: 1250px) {
+  .card-container {
+    flex-direction: column;
+    height: 100%;
+  }
+}
+
+:host ::ng-deep .p-card-body {
+  padding: 0.5rem;
+}

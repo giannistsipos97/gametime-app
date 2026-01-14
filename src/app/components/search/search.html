@@ -1,0 +1,63 @@
+<div class="relative inline-block w-full max-w-xl">
+  <!-- Search Input -->
+  <input
+    type="text"
+    pInputText
+    placeholder="Search for games..."
+    [(ngModel)]="searchQuery"
+    (keyup)="onSearch()"
+    class="w-full h-14 px-6 text-lg rounded-full border-none outline-none"
+  />
+
+  @if(searchQuery){
+  <i
+    (click)="clearSearch()"
+    class="fa-regular fa-circle-xmark cursor-pointer text-xl absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+  ></i>
+  } @else{
+  <i class="fas fa-search absolute text-xl right-6 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+  }
+
+  <!-- Dropdown Panel -->
+  @if(data?.length){
+  <div
+    class="absolute left-1/2 transform -translate-x-1/2 mt-1 bg-[#0e1330] shadow-lg rounded-lg max-h-[42rem] overflow-y-auto z-50 w-[700px]"
+  >
+    @for(game of data; track game.id){
+    <div
+      (click)="selectGame(game)"
+      class="p-5 hover:bg-[#163e8c] cursor-pointer flex justify-between items-center gap-5 border-b border-gray-600 last:border-b-0"
+    >
+      <!-- Left: Image + Name -->
+      <div class="flex items-center gap-5" [routerLink]="['/gameDetails', game.id]">
+        <img [src]="game.background_image" class="w-24 h-24 rounded-md" />
+        <div class="flex flex-col gap-2">
+          <span class="text-lg font-semibold text-white">{{ game.name }}</span>
+          <span class="text-gray-300 text-sm flex items-center gap-3">
+            @for(platform of game.parent_platforms; track platform.platform.id;){
+            <ng-container>
+              <i [class]="platform.platform.name | platformIcon" [pTooltip]="platform.platform.name"></i>
+            </ng-container>
+            }
+          </span>
+        </div>
+      </div>
+
+      <!-- Right: Ratings + Platforms -->
+      <div class="flex flex-col items-end gap-1">
+        <button
+          pButton
+          class="mr-1 text-black !bg-[#D48806] border border-solid !border-[#D48806] w-8 h-8 text-sm rounded-full"
+          [pTooltip]="isInLibrary(game.id) ? 'Already in library' : 'Add to Library'"
+          tooltipPosition="bottom"
+          [disabled]="isInLibrary(game.id)"
+          (click)="addToLibrary(game)"
+        >
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

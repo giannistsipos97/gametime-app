@@ -1,0 +1,43 @@
+header {
+  display: flex;
+  padding-inline: 16px;
+  padding-block: 8px;
+  background-color: #0e1330;
+  // background-color: blue;
+  color: white;
+  align-items: center;
+  // justify-content: space-between;
+
+  nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .left-section{
+      display: flex;
+    }
+
+    .title{
+      cursor: pointer;
+      font-size: 30px;
+      padding-right: 0.5rem;
+      
+      &:hover {
+        color: #445ce3;
+      }
+    
+    }
+
+i {
+        &:hover {
+        color: #445ce3;
+        }
+      }
+  }
+}
+
+.icon-small {
+  width: 55px;
+  height: 55px;
+}

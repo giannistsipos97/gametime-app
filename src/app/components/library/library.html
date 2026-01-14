@@ -1,0 +1,109 @@
+<div class="w-full calculateHeight mt-6 p-6">
+  <h2 class="text-3xl font-bold justify-self-center">My Library</h2>
+
+  <div class="flex justify-center p-4 gap-2">
+    <p-multiselect
+      [options]="playedOptions"
+      class="m-2"
+      optionLabel="label"
+      placeholder="Played"
+      class="w-full md:w-56 !rounded-3xl"
+    />
+    <p-multiselect
+      [options]="platforms"
+      placeholder="Select Platforms"
+      optionLabel="label"
+      styleClass="w-full md:w-56 !rounded-3xl"
+      display="chip"
+    >
+      <ng-template let-platform pTemplate="item">
+        <div class="flex items-center gap-2">
+          <i class="{{platform.icon}}" style="width: 20px"></i>
+          <div>{{ platform.label }}</div>
+        </div>
+      </ng-template>
+    </p-multiselect>
+    <!-- <p-multiselect optionLabel="name" placeholder="Select a City" class="w-full md:w-56 !rounded-3xl" />
+    <p-multiselect optionLabel="name" placeholder="Select a City" class="w-full md:w-56 !rounded-3xl" /> -->
+  </div>
+
+  @if (libraryGames$ | async; as libraryGames){ @if (libraryGames.length > 0){
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    @for (game of libraryGames; track game.id) {
+    <p-card
+      class="bg-[#070e35] cursor-pointer rounded-xl border border-[#16223d] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+    >
+      <ng-template #header>
+        <img
+          [routerLink]="['/gameDetails', game.id]"
+          class="w-full h-44 object-cover"
+          [src]="game.background_image"
+          [alt]="game.name"
+        />
+      </ng-template>
+
+      <ng-template #title>
+        <div class="flex justify-between items-center">
+          <span [routerLink]="['/gameDetails', game.id]" class="text-lg font-bold line-clamp-1">{{ game.name }}</span>
+        </div>
+      </ng-template>
+
+      <ng-template #subtitle>
+        <div class="flex justify-between items-center mt-2">
+          <div class="font-medium">
+            {{ game.rating }}
+            <i class="pi pi-star-fill text-yellow-500"></i>
+          </div>
+          <div>
+            <button
+              pButton
+              class="mr-1 text-black bg-white w-8 h-8 text-sm rounded-full"
+              [ngClass]="isInPlayNext(game.id) ? '!bg-[#D48806] hover:!bg-yellow-900 border border-solid border-[#D48806]' : '!bg-white border border-solid hover:!bg-[#D48806]'"
+              pTooltip="Add to Play Next"
+              tooltipPosition="bottom"
+              (click)="confirmPlayNext(game)"
+            >
+              <i class="fa-solid fa-angles-right"></i>
+            </button>
+            <button
+              pButton
+              class="mr-1 text-black bg-white border border-solid border-red-700 hover:bg-red-700 w-8 h-8 text-sm rounded-full"
+              pTooltip="Remove from Library"
+              tooltipPosition="bottom"
+              (click)="confirmDelete(game)"
+            >
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <button
+              pButton
+              class="mr-1 text-black w-8 h-8 text-sm rounded-full"
+              [ngClass]="game.played ? '!bg-green-600 hover:!bg-green-950 border border-solid border-green-600' : '!bg-white border border-solid hover:!bg-green-600'"
+              pTooltip="Add to Played"
+              tooltipPosition="bottom"
+              (click)="game.played ? confirmPlayed(game) : displayDialog(game)"
+            >
+              <i class="fas fa-check"></i>
+            </button>
+          </div>
+        </div>
+      </ng-template>
+    </p-card>
+    }
+  </div>
+  } @else {
+  <div class="flex justify-center items-center h-full">
+    <h2 class="text-[40px]">Your library is empty</h2>
+  </div>
+  } }
+</div>
+
+@if(displayCompletedDialog){
+<app-complete-dialog
+  [title]="'Game Completion Details'"
+  [selectedGame]="selectedGame"
+  (closeDialog)="displayCompletedDialog = $event"
+  (updateCurrentlyPlaying)="updateGame($event)"
+></app-complete-dialog>
+}
+
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>

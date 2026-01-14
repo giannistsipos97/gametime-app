@@ -1,0 +1,98 @@
+<div class="container-form flex justify-center items-center text-white">
+  <div class="bg-[#1a244d] p-10 rounded-2xl shadow-xl w-full max-w-md">
+    <h2 class="text-3xl font-bold text-center mb-8">Create an Account</h2>
+
+    <form #registerForm="ngForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <!-- Username -->
+      <div>
+        <label for="username" class="block text-sm font-medium mb-2 ml-2">Username</label>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="user.username"
+          name="username"
+          id="username"
+          placeholder="Enter your username"
+          class="w-full h-12 px-4 border border-gray-600 focus:border-[#445ce3] outline-none"
+          #username="ngModel"
+          required
+        />
+        @if(username.invalid && username.touched){
+        <span class="text-red-500 text-sm mt-1 ml-2"> Username is required </span>
+        }
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm font-medium mb-2 ml-2">Email</label>
+        <input
+          pInputText
+          type="email"
+          [(ngModel)]="user.email"
+          name="email"
+          id="email"
+          placeholder="Enter your email"
+          class="w-full h-12 px-4 bg-[#0e1330] border border-gray-600 focus:border-[#445ce3] outline-none"
+          #email="ngModel"
+          required
+        />
+        @if(email.invalid && email.touched){
+        <span class="text-red-500 text-sm mt-1 ml-2">Email is required </span>
+        }
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label for="password" class="block text-sm font-medium mb-2 ml-2">Password</label>
+        <input
+          pInputText
+          type="password"
+          [(ngModel)]="user.password"
+          name="password"
+          id="password"
+          placeholder="Enter your password"
+          class="w-full h-12 px-4 bg-[#0e1330] border border-gray-600 focus:border-[#445ce3] outline-none"
+          #password="ngModel"
+          required
+        />
+        @if(password.invalid && password.touched){
+        <span class="text-red-500 text-sm mt-1 ml-2">Password is required </span>
+        }
+      </div>
+
+      <!-- Confirm Password -->
+      <div>
+        <label for="confirmPassword" class="block text-sm font-medium mb-2 ml-2">Confirm Password</label>
+        <input
+          pInputText
+          type="password"
+          [(ngModel)]="user.confirmPassword"
+          name="confirmPassword"
+          id="confirmPassword"
+          placeholder="Confirm your password"
+          class="w-full h-12 px-4 bg-[#0e1330] border border-gray-600 focus:border-[#445ce3] outline-none"
+          #confirmPassword="ngModel"
+          required
+        />
+        @if(confirmPassword.invalid && confirmPassword.touched){
+        <span class="text-red-500 text-sm mt-1 ml-2">Please confirm your password </span>
+        }
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        pButton
+        type="submit"
+        [disabled]="registerForm.invalid"
+        class="w-full h-12 bg-[#445ce3] hover:bg-[#163e8c] cursor-pointer transition-colors duration-200 text-lg font-semibold"
+      >
+        Register
+      </button>
+
+      <p class="text-center text-sm mt-4">
+        Already have an account?
+        <a routerLink="/login" class="text-[#445ce3] hover:underline cursor-pointer">Sign in</a>
+      </p>
+    </form>
+  </div>
+</div>

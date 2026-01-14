@@ -1,0 +1,14 @@
+:host {
+  .toggle {
+    color: #1a4fae;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    /* On tablets & desktop: always show full text */
+    .toggle {
+      display: none;
+    }
+  }
+}
