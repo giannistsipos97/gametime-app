@@ -1,0 +1,53 @@
+<header class="bg-[#0e1330] text-white px-4 py-2 flex items-center">
+  <nav class="w-full flex items-center justify-between">
+    <!-- Left Section -->
+    <div class="flex items-center gap-2">
+      <h1 class="text-3xl cursor-pointer hover:text-[#445ce3]" routerLink="/">{{title}}</h1>
+      <img src="assets/images/gametimeIcon.png" alt="Icon" class="w-14 h-14" />
+    </div>
+
+    <!-- Center Section (Search Bar) -->
+    <!-- Search bar centered -->
+    <div class="w-full max-w-xl">
+      <app-search class="w-full h-14"></app-search>
+    </div>
+
+    <!-- Right Section -->
+    <div class="flex items-center gap-[15px] text-[25px] cursor-pointer">
+      <!-- <i pTooltip="Search" tooltipPosition="bottom" class="fa-solid fa-magnifying-glass hover:text-[#445ce3]"></i> -->
+      <i
+        routerLink="/wishlist"
+        pTooltip="WishList"
+        tooltipPosition="bottom"
+        class="fa-regular fa-heart hover:text-[#445ce3]"
+      ></i>
+      <i
+        routerLink="/library"
+        pTooltip="Library"
+        tooltipPosition="bottom"
+        class="fa-solid fa-layer-group hover:text-[#445ce3]"
+      ></i>
+      <i
+        routerLink="/stats"
+        pTooltip="Stats"
+        tooltipPosition="bottom"
+        class="fa-solid fa-chart-column hover:text-[#445ce3]"
+      ></i>
+      <i
+        routerLink="/register"
+        pTooltip="Register"
+        tooltipPosition="bottom"
+        class="fa-solid fa-user hover:text-[#445ce3]"
+      ></i>
+
+      <button
+        class="dark-mode-toggle w-10 h-10 text-2xl flex items-center justify-center rounded-lg transition-colors duration-200 hover:bg-gray-700"
+        pTooltip="Dark Mode"
+        tooltipPosition="bottom"
+        (click)="toggleDarkMode()"
+      >
+        <i class="fa-regular fa-moon"></i>
+      </button>
+    </div>
+  </nav>
+</header>
