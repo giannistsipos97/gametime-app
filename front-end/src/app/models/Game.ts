@@ -1,4 +1,5 @@
 export interface Game {
+  _id?: string; // Add this: The MongoDB unique identifier
   id: number;
   name: string;
   released?: string;
@@ -22,4 +23,6 @@ export interface Game {
   completedAt?: string;
   hoursPlayed?: number;
   platform?: string;
+  playNext?: boolean;
+  currentlyPlaying?: boolean;
 }

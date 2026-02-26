@@ -10,6 +10,7 @@ import { LibraryService } from '../../services/LibraryService.service';
 import { Game } from '../../models/Game';
 import { PLATFORMS } from '../../constants/platforms.const';
 import { SelectModule } from 'primeng/select';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-complete-dialog',
@@ -31,6 +32,7 @@ import { SelectModule } from 'primeng/select';
 export class CompleteDialogComponent {
   private fb = inject(FormBuilder);
   private libraryService = inject(LibraryService);
+  private messageService = inject(MessageService);
   platforms = PLATFORMS;
 
   visible: boolean = false;
@@ -44,6 +46,8 @@ export class CompleteDialogComponent {
   @Output() updateCurrentlyPlaying: EventEmitter<Game> = new EventEmitter<Game>();
 
   ngOnInit() {
+    console.log(this.selectedGame);
+
     this.gameForm = this.fb.group({
       // Keep Validators.required here
       completionDate: [null, Validators.required],
@@ -66,17 +70,34 @@ export class CompleteDialogComponent {
 
     const { completionDate, hoursPlayed, platform } = this.gameForm.value;
 
-    this.libraryService.setPlayed(
-      this.selectedGame,
-      true,
-      platform,
-      new Date(completionDate).toISOString(),
-      hoursPlayed,
-    );
+    // 1. Capture a reference to the game for the success message/emit
+    const savedGame = { ...this.selectedGame };
 
-    this.updateCurrentlyPlaying.emit(this.selectedGame);
-    this.gameForm.reset();
-    this.onClose();
+    // 2. Call the service and SUBSCRIBE
+    this.libraryService
+      .setPlayed(this.selectedGame, true, platform, new Date(completionDate).toISOString(), hoursPlayed)
+      .subscribe({
+        next: () => {
+          // 3. This only runs on SUCCESS
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Library Updated',
+            detail: `${savedGame.name} marked as played!`,
+          });
+
+          this.updateCurrentlyPlaying.emit(savedGame);
+          this.gameForm.reset();
+          this.onClose();
+        },
+        error: (err) => {
+          // 4. Handle failure (the form stays open)
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Sync Failed',
+            detail: 'Could not update the game. Please try again.',
+          });
+        },
+      });
   }
 
   onClose() {

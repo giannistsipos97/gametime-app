@@ -13,7 +13,8 @@ import { CurrentlyPlayingService } from '../services/CurrentlyPlayingService.ser
 import { CompleteDialogComponent } from '../components/complete-dialog/complete-dialog';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule, NgTemplateOutlet } from '@angular/common';
+import { LibraryService } from '../services/LibraryService.service';
 // import { LibraryService } from '../services/LibraryService.service';
 
 @Component({
@@ -30,27 +31,38 @@ import { AsyncPipe, CommonModule } from '@angular/common';
     CompleteDialogComponent,
     ToastModule,
     AsyncPipe,
+    NgTemplateOutlet,
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
 export class HomeComponent implements OnInit {
-  // private gameService = inject(GameService);
+  private gameService = inject(GameService);
   private playNextService = inject(PlayNextService);
   private currentlyPlayingService = inject(CurrentlyPlayingService);
   private messageService = inject(MessageService);
-  // private libraryService = inject(LibraryService);
+  private libraryService = inject(LibraryService);
 
   games: Game[] = [];
   playnextGames: Game[] = [];
   displayCompletedDialog: boolean = false;
   selectedGame: Game | null = null;
+  popularGames: Game[] = [];
 
   currentlyPlaying$ = this.currentlyPlayingService.currentlyPlaying$;
+  playNextGames$ = this.libraryService.playNextGames$;
 
   ngOnInit(): void {
+    console.log(this.currentlyPlaying$);
+    this.libraryService.loadLibrary().subscribe();
+
     this.currentlyPlayingService.getList();
-    this.playnextGames = this.playNextService.getPlayNextGames();
+    this.gameService.getPopularGames().subscribe((res) => {
+      this.popularGames = res.results;
+      console.log(this.popularGames);
+    });
+    console.log('library service => ', this.playNextGames$);
+    // this.playnextGames = this.playNextService.getPlayNextGames();
     // this.libraryService.getLibraryGames().find((game) => game.id === )
   }
 

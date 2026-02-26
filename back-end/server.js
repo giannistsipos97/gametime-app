@@ -1,21 +1,32 @@
-// backend/server.js
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
+// backend/index.js
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import dns from "node:dns/promises";
+import libraryRoutes from "./routes/library.js";
+
+// Import your routes
+import authRoutes from "./routes/auth.js";
+
+dotenv.config();
+dns.setServers(["1.1.1.1"]);
 
 const app = express();
-const port = 3000;
+app.use(cors());
+const PORT = 3000;
+app.use(express.json());
 
-// Middleware
-app.use(cors()); // Allows requests from your Angular app
-app.use(bodyParser.json());
+app.use("/api/auth", authRoutes);
+app.use("/api/library", libraryRoutes);
 
-// A simple test route
-app.get("/api/message", (req, res) => {
-  res.json({ message: "Hello from the Node.js Backend!" });
-});
+const mongoUri = process.env.MONGO_URI;
 
-// Start server
-app.listen(port, () => {
-  console.log(`Backend server is running on http://localhost:${port}`);
+mongoose
+  .connect(mongoUri)
+  .then(() => console.log("Connected to MongoDB Atlas via Forced DNS!"))
+  .catch((err) => console.error("Database connection error:", err));
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });

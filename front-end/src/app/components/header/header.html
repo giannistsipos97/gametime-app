@@ -2,8 +2,13 @@
   <nav class="w-full flex items-center justify-between">
     <!-- Left Section -->
     <div class="flex items-center gap-2">
-      <h1 class="text-3xl cursor-pointer hover:text-[#445ce3]" routerLink="/">{{title}}</h1>
-      <img src="assets/images/gametimeIcon.png" alt="Icon" class="w-14 h-14" />
+      <h1
+        class="font-pacman text-4xl text-[#e2a63f] tracking-tighter drop-shadow-[0_4px_0_rgba(0,0,0,1)] cursor-pointer hover:text-[#445ce3]"
+        routerLink="/"
+      >
+        {{title}}
+      </h1>
+      <img src="assets/images/gametimeIcon-primary.png" alt="Icon" class="w-14 h-14" />
     </div>
 
     <!-- Center Section (Search Bar) -->
@@ -33,12 +38,29 @@
         tooltipPosition="bottom"
         class="fa-solid fa-chart-column hover:text-[#445ce3]"
       ></i>
-      <i
+      @if (user$ | async; as user){
+      <p-splitButton
+        icon="fa-solid fa-circle-user"
+        [model]="userMenuItems"
+        styleClass="p-button-raised p-button-secondary custom-split"
+        class="test-xl"
+        (onClick)="router.navigate(['/profile'])"
+      >
+      </p-splitButton>
+      <!-- <i
         routerLink="/register"
         pTooltip="Register"
         tooltipPosition="bottom"
         class="fa-solid fa-user hover:text-[#445ce3]"
+      ></i> -->
+      } @else{
+      <i
+        routerLink="/register"
+        pTooltip="Register"
+        tooltipPosition="bottom"
+        class="fa-solid fa-user-plus hover:text-[#445ce3]"
       ></i>
+      }
 
       <button
         class="dark-mode-toggle w-10 h-10 text-2xl flex items-center justify-center rounded-lg transition-colors duration-200 hover:bg-gray-700"

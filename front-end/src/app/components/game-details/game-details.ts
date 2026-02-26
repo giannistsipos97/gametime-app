@@ -9,7 +9,7 @@ import { PanelModule } from 'primeng/panel';
 import { TagModule } from 'primeng/tag';
 import { ChipModule } from 'primeng/chip';
 import { EsrbAgePipe } from '../../pipes/EsrbAge.pipe';
-import { forkJoin, Subject, switchMap, takeUntil } from 'rxjs';
+import { combineLatest, forkJoin, Subject, switchMap, takeUntil } from 'rxjs';
 import { FindStoreByUrlPipe } from '../../pipes/findStoreByUrl.pipe';
 import { GalleriaModule } from 'primeng/galleria';
 import { TooltipModule } from 'primeng/tooltip';
@@ -55,7 +55,6 @@ export class GameDetailsComponent implements OnInit {
   displayCompletedDialog: boolean = false;
 
   ngOnInit(): void {
-    // Subscribe to paramMap so we react when :id changes
     this.routeParam.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params: ParamMap) => {
       const idParam = params.get('id');
       if (!idParam) return;
@@ -63,27 +62,23 @@ export class GameDetailsComponent implements OnInit {
       const gameId = Number(idParam);
       if (isNaN(gameId)) return;
 
-      // Fetch details + stores + screenshots for this id
-      forkJoin({
-        details: this.gameService.getGameDetails(gameId),
-        stores: this.gameService.getGameStores(gameId),
-        screenshots: this.gameService.getScreenshotsOfGame(gameId),
+      combineLatest({
+        data: forkJoin({
+          details: this.gameService.getGameDetails(gameId),
+          stores: this.gameService.getGameStores(gameId),
+          screenshots: this.gameService.getScreenshotsOfGame(gameId),
+        }),
+        library: this.libraryService.libraryGames$, // Listen to the library stream
       })
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: ({ details, stores, screenshots }) => {
-            this.game = details;
-            this.stores = (stores && (stores.results || stores)) || [];
-            this.screenshots = (screenshots && (screenshots.results || screenshots)) || [];
-            this.gameInLibrary = this.libraryService.getLibraryGames().find((game) => game.id === this.game.id) || null;
-            console.log('gameInLibrary.played => ', this.gameInLibrary?.played);
-            console.log('gameInLibrary.platform => ', this.gameInLibrary?.platform);
-            console.log('gameInLibrary.hoursPlayed => ', this.gameInLibrary?.hoursPlayed);
+          next: ({ data, library }) => {
+            this.game = data.details;
+            // ... assign stores and screenshots ...
 
-            // console.log('game => ', this.game.played);
-          },
-          error: (err) => {
-            console.error('Error loading game details', err);
+            // This will now update automatically if the library loads later
+            // or if the user adds the game while on this page!
+            this.gameInLibrary = library.find((g) => g.id === this.game.id) || null;
           },
         });
     });
@@ -119,11 +114,14 @@ export class GameDetailsComponent implements OnInit {
   // }
 
   addToLibrary(game: Game) {
-    this.libraryService.addGame(game);
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Added to Library',
-      detail: `${game.name} is now in your library!`,
+    this.libraryService.addGame(game).subscribe({
+      next: (updatedLibrary) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Added to Library',
+          detail: `${game.name} is now in your library!`,
+        });
+      },
     });
   }
 
@@ -150,22 +148,51 @@ export class GameDetailsComponent implements OnInit {
   }
 
   updatePlayed(game: Game) {
-    const newValue = !this.gameInLibrary?.played;
-    this.libraryService.setPlayed(game, newValue);
-    game.played = newValue; // update UI immediately
-    this.messageService.add({
-      severity: newValue ? 'success' : 'warn',
-      summary: newValue ? 'Marked as Played' : 'Back to Backlog',
-      detail: newValue ? 'Great job finishing the game!' : 'Removed from played!.',
+    // 1. Calculate the new state
+    const newValue = !game.played;
+
+    // 2. Call the service and SUBSCRIBE
+    this.libraryService.setPlayed(game, newValue).subscribe({
+      next: () => {
+        // 3. Success Feedback
+        this.messageService.add({
+          severity: newValue ? 'success' : 'warn',
+          summary: newValue ? 'Marked as Played' : 'Back to Backlog',
+          detail: newValue ? 'Great job finishing the game!' : 'Removed from played.',
+        });
+
+        // Note: We don't need 'game.played = newValue' here anymore
+        // because loadLibrary() inside the service refreshes the whole list.
+      },
+      error: (err) => {
+        // 4. If it fails, the UI stays as it was
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Update Failed',
+          detail: 'Could not sync with the database.',
+        });
+      },
     });
   }
 
-  removeFromLibrary(game: Game) {
-    this.libraryService.removeFromLibrary(game.id);
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Removed',
-      detail: 'Game removed from Library',
+  removeFromLibrary() {
+    // 1. Capture the name and ID IMMEDIATELY
+    const nameToDisplay = this.gameInLibrary?.name || 'Game';
+    const idToDelete = this.gameInLibrary?._id;
+
+    if (!idToDelete) return;
+
+    // 2. Start the service call
+    this.libraryService.removeFromLibrary(idToDelete).subscribe({
+      next: () => {
+        // 3. Use the local 'nameToDisplay' variable, NOT 'this.gameInLibrary'
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Removed',
+          detail: `${nameToDisplay} was removed from your library`,
+        });
+      },
+      error: (err) => console.error(err),
     });
   }
 }

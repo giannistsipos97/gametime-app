@@ -8,6 +8,7 @@ import { LibraryService } from '../../services/LibraryService.service';
 import { Game } from '../../models/Game';
 import { PlatformIconPipe } from '../../pipes/platform-icon.pipe';
 import { RouterModule } from '@angular/router';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-wishlist',
@@ -19,6 +20,7 @@ import { RouterModule } from '@angular/router';
 export class WishlistComponent implements OnInit {
   private wishlistService = inject(WishlistService);
   public libraryService = inject(LibraryService);
+  private messageService = inject(MessageService);
 
   wishlistGames: Game[] = [];
 
@@ -36,8 +38,16 @@ export class WishlistComponent implements OnInit {
   }
 
   addToLibrary(game: Game) {
-    this.libraryService.addGame(game);
-    this.removeFromWishlist(game.id);
+    this.libraryService.addGame(game).subscribe({
+      next: (updatedLibrary) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Added to Library',
+          detail: `${game.name} is now in your library!`,
+        });
+        this.removeFromWishlist(game.id);
+      },
+    });
   }
 
   removeFromWishlist(id: number) {

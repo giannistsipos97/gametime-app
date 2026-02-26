@@ -23,9 +23,9 @@ export class CurrentlyPlayingService {
 
   finishGame(game: Game, completionDate: string, platform: string, hoursPlayed?: number) {
     // Mark as played and set date
-    if (!this.libraryService.hasGame(game.id)) {
-      this.libraryService.addGame(game);
-    }
+    // if (!this.libraryService.hasGame(game.id)) {
+    //   this.libraryService.addGame(game);
+    // }
     this.libraryService.setPlayed(game, true, platform, completionDate, hoursPlayed);
 
     // Remove from currently playing

@@ -4,14 +4,13 @@
     <app-search class="w-full h-14"></app-search>
   </div> -->
 
+  @if(currentlyPlaying$ | async; as currentlyPlaying){ @if (currentlyPlaying.length > 0){
   <div class="self-center">
     <p-chip
       label="Currently Playing"
       class="text-m p-2 !text-black font-bold !rounded-full !bg-[#09992d] !px-2 !py-1 !gap-1"
     ></p-chip>
   </div>
-
-  @if(currentlyPlaying$ | async; as currentlyPlaying){
   <div class="card-container flex gap-4 mt-8 overflow-x-auto">
     @for (game of currentlyPlaying; track game.id) {
     <p-card class="rounded-3xl flex-none overflow-hidden border border-solid border-black">
@@ -43,13 +42,6 @@
         <div class="flex justify-end gap-1">
           <button
             pButton
-            class="text-black w-8 h-8 text-sm rounded-full bg-white border border-solid border-black hover:bg-green-500"
-            (click)="finish(game)"
-          >
-            <i class="fas fa-check"></i>
-          </button>
-          <button
-            pButton
             class="text-black w-8 h-8 text-sm rounded-full bg-white border border-solid border-black hover:bg-red-500"
             pTooltip="Remove from Play Next"
             tooltipPosition="bottom"
@@ -57,22 +49,48 @@
           >
             <i class="fas fa-times"></i>
           </button>
+          <button
+            pButton
+            class="text-black w-8 h-8 text-sm rounded-full bg-white border border-solid border-black hover:bg-green-500"
+            pTooltip="Mark as Played"
+            tooltipPosition="bottom"
+            (click)="finish(game)"
+          >
+            <i class="fas fa-check"></i>
+          </button>
         </div>
       </ng-template>
     </p-card>
     }
   </div>
-  }
+  } @else{
+  <div
+    class="empty-state-container w-full flex flex-col items-center justify-center p-12 mt-8 rounded-3xl border-2 border-dashed border-[darkgoldenrod] bg-[#0E1330]"
+  >
+    <i class="fa-solid fa-bolt text-4xl text-yellow-500 mb-4"></i>
+
+    <h2 class="text-2xl font-black text-white mb-6 text-center">Looks like you are not playing anything!</h2>
+
+    <button
+      pButton
+      routerLink="/library"
+      class="flex items-center justify-center gap-2 px-8 py-3 text-black font-bold rounded-full bg-white border-2 border-solid border-black hover:bg-green-500 hover:text-white hover:border-green-600 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+    >
+      <i class="pi pi-plus text-sm"></i>
+      <span>Add a game to the playing list</span>
+    </button>
+  </div>
+  } }
 
   <div class="flex flex-col justify-center mt-10 px-6">
     <p-chip
-      label="Currently Playing"
+      label="Play Next"
       class="text-m p-2 !text-black font-bold !rounded-full !bg-[#D48806] !px-2 !py-1 !gap-1"
     ></p-chip>
   </div>
 
   <div class="card-container flex gap-4 mt-8 overflow-x-auto">
-    @for (playnextGame of playnextGames; track $index) {
+    @for (playnextGame of playNextGames$ | async; track $index) {
     <p-card class="rounded-3xl flex-none overflow-hidden border border-solid border-black">
       <ng-template #header>
         <img
@@ -102,21 +120,21 @@
         <div class="flex justify-end gap-1">
           <button
             pButton
-            class="text-black w-8 h-8 text-sm rounded-full bg-white border border-solid border-black hover:bg-[#D48806]"
-            pTooltip="Add to currently playing"
-            tooltipPosition="bottom"
-            (click)="addToPlaying(playnextGame)"
-          >
-            <i class="fa-solid fa-play"></i>
-          </button>
-          <button
-            pButton
             class="text-black w-8 h-8 text-sm rounded-full bg-white border border-solid border-black hover:bg-red-500"
             pTooltip="Remove from Play Next"
             tooltipPosition="bottom"
             (click)="removeFromPlayNext(playnextGame)"
           >
             <i class="fas fa-times"></i>
+          </button>
+          <button
+            pButton
+            class="text-black w-8 h-8 text-sm rounded-full bg-white border border-solid border-black hover:bg-[#D48806]"
+            pTooltip="Add to currently playing"
+            tooltipPosition="bottom"
+            (click)="addToPlaying(playnextGame)"
+          >
+            <i class="fa-solid fa-play"></i>
           </button>
         </div>
       </ng-template>

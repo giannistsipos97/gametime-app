@@ -27,9 +27,9 @@
     <p-multiselect optionLabel="name" placeholder="Select a City" class="w-full md:w-56 !rounded-3xl" /> -->
   </div>
 
-  @if (libraryGames$ | async; as libraryGames){ @if (libraryGames.length > 0){
+  @if (libraryGames$ | async; as libraryGames){ {{libraryGames.length}} @if (libraryGames.length > 0){
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-    @for (game of libraryGames; track game.id) {
+    @for (game of libraryGames; track game._id) {
     <p-card
       class="bg-[#070e35] cursor-pointer rounded-xl border border-[#16223d] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
     >
@@ -80,7 +80,7 @@
               [ngClass]="game.played ? '!bg-green-600 hover:!bg-green-950 border border-solid border-green-600' : '!bg-white border border-solid hover:!bg-green-600'"
               pTooltip="Add to Played"
               tooltipPosition="bottom"
-              (click)="game.played ? confirmPlayed(game) : displayDialog(game)"
+              (click)="game.played ? removedFromPlayed(game) : displayDialog(game)"
             >
               <i class="fas fa-check"></i>
             </button>

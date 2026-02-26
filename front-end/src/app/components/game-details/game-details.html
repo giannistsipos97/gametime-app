@@ -40,7 +40,7 @@
 
         <div class="flex gap-2 pt-8 items-center">
           <button
-            (click)="gameInLibrary ? removeFromLibrary(game) : addToLibrary(game)"
+            (click)="gameInLibrary ? removeFromLibrary() : addToLibrary(game)"
             pButton
             class="played-btn h-11 text-sm rounded-full p-2 w-11"
             [ngClass]="gameInLibrary ? 'bg-[#D48806] hover:bg-[#9e6707] border border-solid border-[#D48806]' : '!bg-transparent border border-solid hover:bg-[#D48806]' "
@@ -72,16 +72,17 @@
             <i class="fas fa-check text-xl"></i>
           </button>
         </div>
-
+        @if(gameInLibrary?.hoursPlayed){
         <div class="pt-4 flex items-center gap-2">
           <i class="fa-regular fa-clock"></i>
           <span>Time Played: {{gameInLibrary?.hoursPlayed}} hours</span>
         </div>
+        } @if (gameInLibrary?.platform){
         <div class="pt-4 flex items-center gap-2">
-          <i class="fa-solid fa-gamepad"></i>
           <span>Played on: {{ gameInLibrary?.platform | uppercase}}</span>
           <i [class]="gameInLibrary?.platform | platformIcon"></i>
         </div>
+        }
         <div class="flex gap-2 pt-6">
           @for(genre of game.genres; track $index){
           <p-tag [value]="genre.name" severity="secondary" class="w-18" [rounded]="true" />

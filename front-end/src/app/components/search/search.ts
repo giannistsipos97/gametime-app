@@ -12,6 +12,7 @@ import { debounceTime } from 'rxjs/operators';
 import { RouterModule } from '@angular/router';
 import { LibraryService } from '../../services/LibraryService.service';
 import { Game } from '../../models/Game';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-search',
@@ -30,8 +31,10 @@ import { Game } from '../../models/Game';
   styleUrl: './search.scss',
 })
 export class SearchComponent implements OnInit {
-  gameService = inject(GameService);
-  libraryService = inject(LibraryService);
+  private gameService = inject(GameService);
+  private libraryService = inject(LibraryService);
+  private messageService = inject(MessageService);
+
   private searchSubject = new Subject<string>();
   searchQuery: string = '';
   data: any;
@@ -66,11 +69,19 @@ export class SearchComponent implements OnInit {
   }
 
   addToLibrary(game: Game) {
-    this.libraryService.addGame(game);
-    alert(`${game.name} added to your library!`);
+    this.libraryService.addGame(game).subscribe({
+      next: (updatedLibrary) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Added to Library',
+          detail: `${game.name} is now in your library!`,
+        });
+      },
+    });
   }
 
   isInLibrary(id: number): boolean {
+    // console.log('id => ', id);
     return this.libraryService.hasGame(id);
   }
 }
