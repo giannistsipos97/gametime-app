@@ -46,8 +46,6 @@ export class CompleteDialogComponent {
   @Output() updateCurrentlyPlaying: EventEmitter<Game> = new EventEmitter<Game>();
 
   ngOnInit() {
-    console.log(this.selectedGame);
-
     this.gameForm = this.fb.group({
       // Keep Validators.required here
       completionDate: [null, Validators.required],
@@ -57,10 +55,6 @@ export class CompleteDialogComponent {
       hoursPlayed: [null, [Validators.min(0)]],
       platform: [null, Validators.required],
     });
-  }
-
-  selectPlatform(event: any) {
-    console.log(event.value);
   }
 
   onSubmit() {

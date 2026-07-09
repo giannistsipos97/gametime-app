@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
 import { ButtonDirective } from 'primeng/button';
@@ -15,7 +15,7 @@ import { MessageService } from 'primeng/api';
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private messageService = inject(MessageService);
@@ -26,8 +26,6 @@ export class RegisterComponent implements OnInit {
     password: '',
     confirmPassword: '',
   };
-
-  ngOnInit(): void {}
 
   onSubmit() {
     // Basic validation
@@ -41,12 +39,20 @@ export class RegisterComponent implements OnInit {
     }
 
     this.authService.register(this.user).subscribe({
-      next: (response) => {
-        console.log('Registration successful!', response);
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Registration successful',
+          detail: 'You can now log in.',
+        });
         this.router.navigate(['/login']); // Send them to login page
       },
       error: (err) => {
-        alert(err.error.message || 'Registration failed');
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Registration failed',
+          detail: err.error.message || 'Please try again.',
+        });
       },
     });
   }

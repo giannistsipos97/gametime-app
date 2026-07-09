@@ -6,7 +6,6 @@ import { RouterModule } from '@angular/router';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Game } from '../../models/Game';
 import { LibraryService } from '../../services/LibraryService.service';
-import { PlayNextService } from '../../services/PlayNextService.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { PLATFORMS } from '../../constants/platforms.const';
@@ -49,26 +48,23 @@ export class LibraryComponent implements OnInit {
 
   ngOnInit(): void {
     this.libraryService.loadLibrary().subscribe();
-
-    this.libraryService.loadLibrary();
-  }
-
-  isInPlayNext(gameId: number): boolean {
-    return this.libraryService.isInPlayNext(gameId);
   }
 
   confirmPlayNext(game: Game) {
-    if (this.isInPlayNext(game.id)) {
+    if (game.playNext) {
       this.confirmationService.confirm({
         message: 'Are you sure you want to remove this game from your play next list?',
         header: 'Remove from Play Next Confirmation',
         icon: 'pi pi-info-circle',
         accept: () => {
-          this.libraryService.togglePlayNext(game);
-          this.messageService.add({
-            severity: 'warn',
-            summary: 'Removed from Play Next',
-            detail: 'Game removed from play next list',
+          this.libraryService.togglePlayNext(game).subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: 'warn',
+                summary: 'Removed from Play Next',
+                detail: 'Game removed from play next list',
+              });
+            },
           });
         },
       });
@@ -78,11 +74,14 @@ export class LibraryComponent implements OnInit {
         header: 'Play Next Confirmation',
         icon: 'pi pi-info-circle',
         accept: () => {
-          this.libraryService.togglePlayNext(game);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Added to Play Next',
-            detail: 'Game added to play next list',
+          this.libraryService.togglePlayNext(game).subscribe({
+            next: () => {
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Added to Play Next',
+                detail: 'Game added to play next list',
+              });
+            },
           });
         },
       });

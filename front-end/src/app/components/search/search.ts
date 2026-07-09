@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { GameService } from '../../services/GameService.service';
@@ -7,12 +7,12 @@ import { FormsModule } from '@angular/forms';
 import { PopoverModule } from 'primeng/popover';
 import { PlatformIconPipe } from '../../pipes/platform-icon.pipe';
 import { Tooltip } from 'primeng/tooltip';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, map, Subject, switchMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { LibraryService } from '../../services/LibraryService.service';
 import { Game } from '../../models/Game';
 import { MessageService } from 'primeng/api';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-search',
@@ -34,28 +34,41 @@ export class SearchComponent implements OnInit {
   private gameService = inject(GameService);
   private libraryService = inject(LibraryService);
   private messageService = inject(MessageService);
+  private destroyRef = inject(DestroyRef);
 
   private searchSubject = new Subject<string>();
   searchQuery: string = '';
   data: any;
+  libraryIds = new Set<number>();
 
   ngOnInit() {
     this.searchSubject
-      .pipe(debounceTime(500)) // 500ms delay after user stops typing
-      .subscribe((query) => {
-        if (query.trim()) {
-          this.gameService.searchGames(query).subscribe((res) => {
-            this.data = res.results;
-          });
-        } else {
-          this.data = [];
-        }
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap((query) => {
+          const trimmedQuery = query.trim();
+          return trimmedQuery
+            ? this.gameService.searchGames(trimmedQuery).pipe(
+                map((res) => res.results),
+                catchError(() => of([])),
+              )
+            : of([]);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((results) => {
+        this.data = results;
       });
+
+    this.libraryService.libraryIds$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((ids) => {
+      this.libraryIds = ids;
+    });
   }
 
-  onSearch() {
+  onSearch(query: string) {
     // Emit the current searchQuery to the subject
-    this.searchSubject.next(this.searchQuery);
+    this.searchSubject.next(query);
   }
 
   clearSearch() {
@@ -80,8 +93,4 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  isInLibrary(id: number): boolean {
-    // console.log('id => ', id);
-    return this.libraryService.hasGame(id);
-  }
 }

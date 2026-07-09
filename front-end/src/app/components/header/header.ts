@@ -30,7 +30,7 @@ import { LibraryService } from '../../services/LibraryService.service';
 export class HeaderComponent {
   authService = inject(AuthService);
   router = inject(Router);
-  libraryService = inject(LibraryService)
+  libraryService = inject(LibraryService);
 
   title = 'Gametime';
   user$ = this.authService.currentUser$;
@@ -52,9 +52,5 @@ export class HeaderComponent {
   toggleDarkMode() {
     const element = document.querySelector('html');
     element?.classList.toggle('my-app-dark');
-  }
-
-  toggleOverlay(searchQuery: string) {
-    console.log('searchQuery => ', searchQuery);
   }
 }

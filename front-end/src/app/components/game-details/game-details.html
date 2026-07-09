@@ -52,12 +52,12 @@
           <button
             pButton
             class="played-btn h-11 text-sm rounded-full p-2 w-11"
-            [ngClass]="isInWishlist(game.id) ? 'bg-[#8d1f1f] hover:bg-[#740e0e] border border-solid border-[#8d1f1f]' : '!bg-transparent border border-solid hover:bg-[#740e0e]' "
-            (click)="isInWishlist(game.id) ? removeFromWishlist(game.id) : addToWishlist(game)"
+            [ngClass]="isWishlisted ? 'bg-[#8d1f1f] hover:bg-[#740e0e] border border-solid border-[#8d1f1f]' : '!bg-transparent border border-solid hover:bg-[#740e0e]' "
+            (click)="isWishlisted ? removeFromWishlist(game.id) : addToWishlist(game)"
           >
             <i
               class="fa-solid fa-heart text-xl"
-              [pTooltip]="isInWishlist(game.id) ? 'In Wishlist' : 'Add to Wishlist'"
+              [pTooltip]="isWishlisted ? 'In Wishlist' : 'Add to Wishlist'"
             ></i>
           </button>
           }

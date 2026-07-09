@@ -58,7 +58,7 @@
             <button
               pButton
               class="mr-1 text-black bg-white w-8 h-8 text-sm rounded-full"
-              [ngClass]="isInPlayNext(game.id) ? '!bg-[#D48806] hover:!bg-yellow-900 border border-solid border-[#D48806]' : '!bg-white border border-solid hover:!bg-[#D48806]'"
+              [ngClass]="game.playNext ? '!bg-[#D48806] hover:!bg-yellow-900 border border-solid border-[#D48806]' : '!bg-white border border-solid hover:!bg-[#D48806]'"
               pTooltip="Add to Play Next"
               tooltipPosition="bottom"
               (click)="confirmPlayNext(game)"

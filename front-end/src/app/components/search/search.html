@@ -5,7 +5,7 @@
     pInputText
     placeholder="Search for games..."
     [(ngModel)]="searchQuery"
-    (keyup)="onSearch()"
+    (ngModelChange)="onSearch($event)"
     class="w-full h-14 px-6 text-lg rounded-full border-none outline-none"
   />
 
@@ -48,9 +48,9 @@
         <button
           pButton
           class="mr-1 text-black !bg-[#D48806] border border-solid !border-[#D48806] w-8 h-8 text-sm rounded-full"
-          [pTooltip]="isInLibrary(game.id) ? 'Already in library' : 'Add to Library'"
+          [pTooltip]="libraryIds.has(game.id) ? 'Already in library' : 'Add to Library'"
           tooltipPosition="bottom"
-          [disabled]="isInLibrary(game.id)"
+          [disabled]="libraryIds.has(game.id)"
           (click)="addToLibrary(game)"
         >
           <i class="fa-solid fa-plus"></i>

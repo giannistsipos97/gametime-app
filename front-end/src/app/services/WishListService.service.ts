@@ -35,10 +35,6 @@ export class WishlistService {
     return this.wishlistGames.some((g) => g.id === gameId);
   }
 
-  getWishlistGames(): Game[] {
-    return [...this.wishlistGames];
-  }
-
   private saveAndEmit() {
     this.storage.saveLibrary(this.STORAGE_KEY, this.wishlistGames);
     this.wishlistGamesSubject.next([...this.wishlistGames]);

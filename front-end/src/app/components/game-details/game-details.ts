@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { GameService } from '../../services/GameService.service';
 import { Game } from '../../models/Game';
@@ -9,7 +9,7 @@ import { PanelModule } from 'primeng/panel';
 import { TagModule } from 'primeng/tag';
 import { ChipModule } from 'primeng/chip';
 import { EsrbAgePipe } from '../../pipes/EsrbAge.pipe';
-import { combineLatest, forkJoin, Subject, switchMap, takeUntil } from 'rxjs';
+import { combineLatest, distinctUntilChanged, filter, forkJoin, map, Subject, switchMap, takeUntil } from 'rxjs';
 import { FindStoreByUrlPipe } from '../../pipes/findStoreByUrl.pipe';
 import { GalleriaModule } from 'primeng/galleria';
 import { TooltipModule } from 'primeng/tooltip';
@@ -39,7 +39,7 @@ import { CompleteDialogComponent } from '../complete-dialog/complete-dialog';
   templateUrl: './game-details.html',
   styleUrl: './game-details.scss',
 })
-export class GameDetailsComponent implements OnInit {
+export class GameDetailsComponent implements OnInit, OnDestroy {
   private routeParam = inject(ActivatedRoute);
   private gameService = inject(GameService);
   private libraryService = inject(LibraryService);
@@ -53,35 +53,38 @@ export class GameDetailsComponent implements OnInit {
   screenshots: any[] = [];
   private destroy$ = new Subject<void>();
   displayCompletedDialog: boolean = false;
+  isWishlisted = false;
 
   ngOnInit(): void {
-    this.routeParam.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params: ParamMap) => {
-      const idParam = params.get('id');
-      if (!idParam) return;
+    this.libraryService.loadLibrary().pipe(takeUntil(this.destroy$)).subscribe();
 
-      const gameId = Number(idParam);
-      if (isNaN(gameId)) return;
-
-      combineLatest({
-        data: forkJoin({
-          details: this.gameService.getGameDetails(gameId),
-          stores: this.gameService.getGameStores(gameId),
-          screenshots: this.gameService.getScreenshotsOfGame(gameId),
-        }),
-        library: this.libraryService.libraryGames$, // Listen to the library stream
-      })
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: ({ data, library }) => {
-            this.game = data.details;
-            // ... assign stores and screenshots ...
-
-            // This will now update automatically if the library loads later
-            // or if the user adds the game while on this page!
-            this.gameInLibrary = library.find((g) => g.id === this.game.id) || null;
-          },
-        });
-    });
+    this.routeParam.paramMap
+      .pipe(
+        map((params: ParamMap) => Number(params.get('id'))),
+        filter((gameId) => !isNaN(gameId)),
+        distinctUntilChanged(),
+        switchMap((gameId) =>
+          combineLatest({
+            data: forkJoin({
+              details: this.gameService.getGameDetails(gameId),
+              stores: this.gameService.getGameStores(gameId),
+              screenshots: this.gameService.getScreenshotsOfGame(gameId),
+            }),
+            library: this.libraryService.libraryGames$,
+            wishlist: this.wishlistService.wishlistGames$,
+          }),
+        ),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: ({ data, library, wishlist }) => {
+          this.game = data.details;
+          this.stores = data.stores.results ?? [];
+          this.screenshots = data.screenshots.results ?? [];
+          this.gameInLibrary = library.find((g) => g.id === this.game.id) || null;
+          this.isWishlisted = wishlist.some((g) => g.id === this.game.id);
+        },
+      });
   }
 
   ngOnDestroy(): void {
@@ -123,10 +126,6 @@ export class GameDetailsComponent implements OnInit {
         });
       },
     });
-  }
-
-  isInWishlist(gameId: number): boolean {
-    return this.wishlistService.hasGame(gameId);
   }
 
   addToWishlist(game: Game) {

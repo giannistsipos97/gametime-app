@@ -30,7 +30,6 @@
           display="chip"
           appendTo="body"
           showClear="true"
-          (onChange)="selectPlatform($event)"
           [styleClass]="(gameForm.get('platform')?.invalid && gameForm.get('platform')?.touched) 
                 ? 'w-[13rem] md:w-54 !rounded-3xl !border-red-500' 
                 : 'w-[13rem] md:w-54 !rounded-3xl'"

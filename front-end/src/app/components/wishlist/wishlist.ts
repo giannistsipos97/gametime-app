@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { DataViewModule } from 'primeng/dataview';
@@ -9,6 +9,7 @@ import { Game } from '../../models/Game';
 import { PlatformIconPipe } from '../../pipes/platform-icon.pipe';
 import { RouterModule } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-wishlist',
@@ -21,20 +22,15 @@ export class WishlistComponent implements OnInit {
   private wishlistService = inject(WishlistService);
   public libraryService = inject(LibraryService);
   private messageService = inject(MessageService);
+  private destroyRef = inject(DestroyRef);
 
   wishlistGames: Game[] = [];
 
-  constructor() {}
-
   ngOnInit() {
-    this.wishlistGames = this.wishlistService.getWishlistGames();
-
     // Subscribe if wishlist changes dynamically
-    this.wishlistService.wishlistGames$.subscribe((games) => {
+    this.wishlistService.wishlistGames$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((games) => {
       this.wishlistGames = games;
     });
-
-    console.log(this.wishlistGames);
   }
 
   addToLibrary(game: Game) {
