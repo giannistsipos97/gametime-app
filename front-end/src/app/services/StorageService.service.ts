@@ -1,17 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Game } from '../models/Game';
-import { STORAGE_KEYS } from '../constants/storage-keys';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
-  // storage.service.ts
   saveLibrary(listType: string, games: Game[]): void {
     localStorage.setItem(listType, JSON.stringify(games));
   }
 
   getLibrary(listType: string): Game[] {
-    return JSON.parse(localStorage.getItem(listType) || '[]');
+    const savedGames = localStorage.getItem(listType);
+
+    if (!savedGames) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(savedGames) as Game[];
+    } catch {
+      localStorage.removeItem(listType);
+      return [];
+    }
   }
 }

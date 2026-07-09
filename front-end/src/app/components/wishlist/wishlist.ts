@@ -27,7 +27,6 @@ export class WishlistComponent implements OnInit {
   wishlistGames: Game[] = [];
 
   ngOnInit() {
-    // Subscribe if wishlist changes dynamically
     this.wishlistService.wishlistGames$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((games) => {
       this.wishlistGames = games;
     });
@@ -35,7 +34,7 @@ export class WishlistComponent implements OnInit {
 
   addToLibrary(game: Game) {
     this.libraryService.addGame(game).subscribe({
-      next: (updatedLibrary) => {
+      next: () => {
         this.messageService.add({
           severity: 'success',
           summary: 'Added to Library',

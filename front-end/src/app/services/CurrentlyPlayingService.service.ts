@@ -10,29 +10,24 @@ export class CurrentlyPlayingService {
   private playingSubject = new BehaviorSubject<Game[]>([]);
   currentlyPlaying$ = this.playingSubject.asObservable();
 
-  private playingGames: Game[] = [];
-
   private storage = inject(StorageService);
 
   constructor() {
-    this.playingGames = this.storage.getLibrary(this.STORAGE_KEY);
-    this.playingSubject.next(this.playingGames);
+    this.playingSubject.next(this.storage.getLibrary(this.STORAGE_KEY));
   }
 
   addGame(game: Game) {
-    if (!this.playingGames.find((g) => g.id === game.id)) {
-      this.playingGames.push(game);
-      this.saveAndEmit();
+    if (!this.playingSubject.value.some((g) => g.id === game.id)) {
+      this.saveAndEmit([...this.playingSubject.value, game]);
     }
   }
 
   removeGame(gameId: number) {
-    this.playingGames = this.playingGames.filter((g) => g.id !== gameId);
-    this.saveAndEmit();
+    this.saveAndEmit(this.playingSubject.value.filter((g) => g.id !== gameId));
   }
 
-  private saveAndEmit() {
-    this.storage.saveLibrary(this.STORAGE_KEY, this.playingGames);
-    this.playingSubject.next([...this.playingGames]);
+  private saveAndEmit(games: Game[]) {
+    this.storage.saveLibrary(this.STORAGE_KEY, games);
+    this.playingSubject.next(games);
   }
 }

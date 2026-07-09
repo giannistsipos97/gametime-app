@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
-import { Game } from '../../models/Game';
 
 @Component({
   selector: 'app-stats',

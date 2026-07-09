@@ -177,6 +177,6 @@
   [title]="'Game Completion Details'"
   [selectedGame]="game"
   (closeDialog)="displayCompletedDialog = $event"
-  (updateCurrentlyPlaying)="game = $event"
+  (updateCurrentlyPlaying)="onGameCompleted($event)"
 ></app-complete-dialog>
 }

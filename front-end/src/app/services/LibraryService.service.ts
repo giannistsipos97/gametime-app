@@ -10,7 +10,6 @@ export class LibraryService {
   private http = inject(HttpClient);
   private messageService = inject(MessageService);
 
-  // This is your Source of Truth
   private libraryGamesSubject = new BehaviorSubject<Game[]>([]);
   libraryGames$ = this.libraryGamesSubject.asObservable();
 
@@ -19,6 +18,7 @@ export class LibraryService {
 
   private hasLoadedLibrary = false;
   private loadLibraryRequest$?: Observable<Game[]>;
+  private loadLibraryErrorShown = false;
 
   private setLibraryGames(games: Game[]): Game[] {
     this.libraryGamesSubject.next(games);
@@ -37,7 +37,6 @@ export class LibraryService {
     return this.setLibraryGames(updatedGames);
   }
 
-  // GET: Load from MongoDB
   loadLibrary(forceRefresh = false): Observable<Game[]> {
     if (!localStorage.getItem('token')) {
       this.clear();
@@ -55,10 +54,20 @@ export class LibraryService {
     this.loadLibraryRequest$ = this.http.get<Game[]>(ENDPOINTS.LIBRARY.LIBRARY).pipe(
       tap((games) => {
         this.setLibraryGames(games);
+        this.loadLibraryErrorShown = false;
       }),
       catchError((err) => {
-        console.error('Could not load library', err);
-        return throwError(() => err);
+        if (!this.loadLibraryErrorShown) {
+          this.messageService.add({
+            severity: 'warn',
+            summary: 'Library unavailable',
+            detail: 'Could not connect to the library server. Please start the backend and try again.',
+          });
+          this.loadLibraryErrorShown = true;
+        }
+
+        console.warn('Could not load library', err);
+        return of(this.libraryGamesSubject.value);
       }),
       finalize(() => {
         this.loadLibraryRequest$ = undefined;
@@ -69,20 +78,17 @@ export class LibraryService {
     return this.loadLibraryRequest$;
   }
 
-  // POST: Add to MongoDB
   addGame(game: Game): Observable<Game[]> {
-    // 1. Check if game exists
     if (this.hasGame(game.id)) {
       this.messageService.add({
         severity: 'warn',
         summary: 'Game Already in Library',
         detail: 'This game is already in your library.',
       });
-      // 2. Return an empty observable so the component subscription still works
+
       return EMPTY;
     }
 
-    // 3. Otherwise, proceed with the POST
     return this.http.post<Game>(ENDPOINTS.LIBRARY.LIBRARY, game).pipe(
       map((savedGame) => this.upsertLocalGame(savedGame)),
       catchError((err) => {
@@ -92,8 +98,6 @@ export class LibraryService {
     );
   }
 
-  // DELETE: Remove from MongoDB
-  // 1. Return the Observable so the component can subscribe
   removeFromLibrary(mongoId: string): Observable<Game[]> {
     return this.http.delete(`${ENDPOINTS.LIBRARY.LIBRARY}/${mongoId}`).pipe(
       map(() => this.setLibraryGames(this.libraryGamesSubject.value.filter((game) => game._id !== mongoId))),
@@ -104,16 +108,12 @@ export class LibraryService {
     );
   }
 
-  // UPDATED hasGame: Looks at the current value of the Subject
   hasGame(gameId: number): boolean {
     return this.libraryGamesSubject.value.some((g) => g.id === gameId);
   }
 
-  // library.service.ts
-  // library.service.ts
-
   setPlayed(
-    game: any,
+    game: Game,
     played: boolean,
     platform?: string,
     completedAt?: string,
@@ -124,17 +124,16 @@ export class LibraryService {
     const updateData = {
       id: game.id,
       name: game.name,
-      thumbnail: game.thumbnail || game.background_image,
+      thumbnail: game.background_image,
       background_image: game.background_image,
       metacritic: game.metacritic,
       rating: game.rating,
-      played: played,
+      played,
       platform: played ? (platform ?? game.platform) : null,
       completedAt: played ? (completedAt ?? game.completedAt) : null,
       hoursPlayed: played ? (hoursPlayed ?? game.hoursPlayed) : null,
     };
 
-    // 1. Return the observable chain
     return this.http.put<Game>(url, updateData).pipe(
       map((savedGame) => this.upsertLocalGame(savedGame)),
       catchError((err) => {
@@ -151,7 +150,6 @@ export class LibraryService {
   }
 
   togglePlayNext(game: Game): Observable<Game[]> {
-    // Use the MongoDB _id
     return this.http.patch<Game>(`${ENDPOINTS.LIBRARY.LIBRARY}/${game._id}/play-next`, {}).pipe(
       map((savedGame) => this.upsertLocalGame(savedGame)),
       catchError((err) => {
@@ -160,5 +158,4 @@ export class LibraryService {
       }),
     );
   }
-
 }

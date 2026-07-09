@@ -10,33 +10,28 @@ export class WishlistService {
   private wishlistGamesSubject = new BehaviorSubject<Game[]>([]);
   wishlistGames$ = this.wishlistGamesSubject.asObservable();
 
-  private wishlistGames: Game[] = [];
-
   private storage = inject(StorageService);
 
   constructor() {
-    this.wishlistGames = this.storage.getLibrary(this.STORAGE_KEY);
-    this.wishlistGamesSubject.next(this.wishlistGames);
+    this.wishlistGamesSubject.next(this.storage.getLibrary(this.STORAGE_KEY));
   }
 
   addGame(game: Game) {
-    if (!this.wishlistGames.find((g) => g.id === game.id)) {
-      this.wishlistGames.push(game);
-      this.saveAndEmit();
+    if (!this.hasGame(game.id)) {
+      this.saveAndEmit([...this.wishlistGamesSubject.value, game]);
     }
   }
 
   removeGame(id: number) {
-    this.wishlistGames = this.wishlistGames.filter((g) => g.id !== id);
-    this.saveAndEmit();
+    this.saveAndEmit(this.wishlistGamesSubject.value.filter((g) => g.id !== id));
   }
 
   hasGame(gameId: number): boolean {
-    return this.wishlistGames.some((g) => g.id === gameId);
+    return this.wishlistGamesSubject.value.some((g) => g.id === gameId);
   }
 
-  private saveAndEmit() {
-    this.storage.saveLibrary(this.STORAGE_KEY, this.wishlistGames);
-    this.wishlistGamesSubject.next([...this.wishlistGames]);
+  private saveAndEmit(games: Game[]) {
+    this.storage.saveLibrary(this.STORAGE_KEY, games);
+    this.wishlistGamesSubject.next(games);
   }
 }

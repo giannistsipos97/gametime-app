@@ -83,7 +83,7 @@ export class SearchComponent implements OnInit {
 
   addToLibrary(game: Game) {
     this.libraryService.addGame(game).subscribe({
-      next: (updatedLibrary) => {
+      next: () => {
         this.messageService.add({
           severity: 'success',
           summary: 'Added to Library',

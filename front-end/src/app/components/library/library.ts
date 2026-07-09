@@ -11,6 +11,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { PLATFORMS } from '../../constants/platforms.const';
 import { CompleteDialogComponent } from '../complete-dialog/complete-dialog';
 
+type PlayedFilter = 'played' | 'notplayed';
+
 @Component({
   selector: 'app-library',
   standalone: true,
@@ -37,12 +39,12 @@ export class LibraryComponent implements OnInit {
 
   platforms = PLATFORMS;
 
-  playedOptions: any[] = [
+  playedOptions: { label: string; value: PlayedFilter }[] = [
     { label: 'Played', value: 'played' },
     { label: 'Not Played', value: 'notplayed' },
   ];
 
-  displayCompletedDialog: boolean = false;
+  displayCompletedDialog = false;
   selectedGame: Game | null = null;
   playNextGames$ = this.libraryService.playNextGames$;
 
@@ -51,41 +53,26 @@ export class LibraryComponent implements OnInit {
   }
 
   confirmPlayNext(game: Game) {
-    if (game.playNext) {
-      this.confirmationService.confirm({
-        message: 'Are you sure you want to remove this game from your play next list?',
-        header: 'Remove from Play Next Confirmation',
-        icon: 'pi pi-info-circle',
-        accept: () => {
-          this.libraryService.togglePlayNext(game).subscribe({
-            next: () => {
-              this.messageService.add({
-                severity: 'warn',
-                summary: 'Removed from Play Next',
-                detail: 'Game removed from play next list',
-              });
-            },
-          });
-        },
-      });
-    } else {
-      this.confirmationService.confirm({
-        message: 'Are you sure you want to add this game for playing next?',
-        header: 'Play Next Confirmation',
-        icon: 'pi pi-info-circle',
-        accept: () => {
-          this.libraryService.togglePlayNext(game).subscribe({
-            next: () => {
-              this.messageService.add({
-                severity: 'success',
-                summary: 'Added to Play Next',
-                detail: 'Game added to play next list',
-              });
-            },
-          });
-        },
-      });
-    }
+    const isRemoving = !!game.playNext;
+
+    this.confirmationService.confirm({
+      message: isRemoving
+        ? 'Are you sure you want to remove this game from your play next list?'
+        : 'Are you sure you want to add this game for playing next?',
+      header: isRemoving ? 'Remove from Play Next Confirmation' : 'Play Next Confirmation',
+      icon: 'pi pi-info-circle',
+      accept: () => {
+        this.libraryService.togglePlayNext(game).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: isRemoving ? 'warn' : 'success',
+              summary: isRemoving ? 'Removed from Play Next' : 'Added to Play Next',
+              detail: isRemoving ? 'Game removed from play next list' : 'Game added to play next list',
+            });
+          },
+        });
+      },
+    });
   }
 
   removedFromPlayed(game: Game) {
@@ -94,21 +81,15 @@ export class LibraryComponent implements OnInit {
       header: 'Unplayed Confirmation',
       icon: 'pi pi-info-circle',
       accept: () => {
-        // 1. Call the service and SUBSCRIBE
         this.libraryService.setPlayed(game, false).subscribe({
           next: () => {
-            // 2. Success Feedback
             this.messageService.add({
               severity: 'warn',
               summary: 'Back to Backlog',
               detail: `${game.name} moved back to your collection.`,
             });
-
-            // Note: game.played = false is no longer strictly needed
-            // because the service refresh handles the UI, but it doesn't hurt.
           },
-          error: (err) => {
-            // 3. Handle potential server errors
+          error: () => {
             this.messageService.add({
               severity: 'error',
               summary: 'Update Failed',
@@ -125,30 +106,12 @@ export class LibraryComponent implements OnInit {
     this.displayCompletedDialog = true;
   }
 
-  updateGame(game: Game) {
-    // 1. Subscribe to the service call
-    this.libraryService.setPlayed(game, true, game.platform).subscribe({
-      next: () => {
-        // 2. This only runs once MongoDB is updated and library is refreshed
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Marked as Played',
-          detail: `Great job finishing ${game.name || 'the game'}!`,
-        });
+  onGameCompleted(game: Game) {
+    this.selectedGame = game;
+  }
 
-        // game.played = true;
-        // ^ You can remove the line above because your libraryGames$
-        // observable will push the updated game status automatically.
-      },
-      error: (err) => {
-        // 3. Inform the user if the save failed
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Sync Failed',
-          detail: 'Could not update status. Please check your connection.',
-        });
-      },
-    });
+  trackGame(game: Game): string | number {
+    return game._id ?? game.id;
   }
 
   confirmDelete(game: Game) {
@@ -157,7 +120,6 @@ export class LibraryComponent implements OnInit {
       header: 'Delete Confirmation',
       icon: 'pi pi-info-circle',
       accept: () => {
-        // Change 'game.id' to 'game._id'
         this.libraryService.removeFromLibrary(game._id!).subscribe({
           next: () => {
             this.messageService.add({ severity: 'warn', summary: 'Removed', detail: 'Game removed' });

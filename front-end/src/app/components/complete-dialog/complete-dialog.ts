@@ -35,23 +35,16 @@ export class CompleteDialogComponent {
   private messageService = inject(MessageService);
   platforms = PLATFORMS;
 
-  visible: boolean = false;
-  date: Date | null = null;
-  hoursPlayed: number | null = null;
   gameForm!: FormGroup;
 
-  @Input() title: string = '';
+  @Input() title = '';
   @Input() selectedGame: Game | null = null;
   @Output() closeDialog: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() updateCurrentlyPlaying: EventEmitter<Game> = new EventEmitter<Game>();
 
   ngOnInit() {
     this.gameForm = this.fb.group({
-      // Keep Validators.required here
       completionDate: [null, Validators.required],
-
-      // Remove Validators.required here.
-      // You can keep Validators.min(0) so if they DO type a number, it can't be negative.
       hoursPlayed: [null, [Validators.min(0)]],
       platform: [null, Validators.required],
     });
@@ -64,27 +57,29 @@ export class CompleteDialogComponent {
 
     const { completionDate, hoursPlayed, platform } = this.gameForm.value;
 
-    // 1. Capture a reference to the game for the success message/emit
-    const savedGame = { ...this.selectedGame };
+    const completedGame: Game = {
+      ...this.selectedGame,
+      played: true,
+      platform,
+      completedAt: new Date(completionDate).toISOString(),
+      hoursPlayed,
+    };
 
-    // 2. Call the service and SUBSCRIBE
     this.libraryService
-      .setPlayed(this.selectedGame, true, platform, new Date(completionDate).toISOString(), hoursPlayed)
+      .setPlayed(completedGame, true, platform, completedGame.completedAt, hoursPlayed)
       .subscribe({
         next: () => {
-          // 3. This only runs on SUCCESS
           this.messageService.add({
             severity: 'success',
             summary: 'Library Updated',
-            detail: `${savedGame.name} marked as played!`,
+            detail: `${completedGame.name} marked as played!`,
           });
 
-          this.updateCurrentlyPlaying.emit(savedGame);
+          this.updateCurrentlyPlaying.emit(completedGame);
           this.gameForm.reset();
           this.onClose();
         },
-        error: (err) => {
-          // 4. Handle failure (the form stays open)
+        error: () => {
           this.messageService.add({
             severity: 'error',
             summary: 'Sync Failed',

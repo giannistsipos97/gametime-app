@@ -1,5 +1,5 @@
 export interface Game {
-  _id?: string; // Add this: The MongoDB unique identifier
+  _id?: string;
   id: number;
   name: string;
   released?: string;
@@ -8,13 +8,13 @@ export interface Game {
   genres: { name: string }[];
   parent_platforms: { platform: { id: number; name: string } }[];
   platforms: { platform: { id: number; name: string; image_background: string } }[];
-  category?: string; // optional fields
-  // platforms?: string[];
+  category?: string;
   description?: string;
   description_raw: string;
-  isPlayed?: boolean; // true if played
-  inWishlist?: boolean; // true if in wishlist
+  isPlayed?: boolean;
+  inWishlist?: boolean;
   website?: string;
+  stores?: { id: number; url?: string }[];
   developers?: { id: number; name: string }[];
   publishers?: { id: number; name: string }[];
   metacritic?: number;
