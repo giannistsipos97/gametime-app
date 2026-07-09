@@ -26,6 +26,13 @@ export class LoginComponent implements OnInit {
     password: '',
     confirmPassword: '',
   };
+  showResetPassword = false;
+  resetUser: User = {
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  };
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
@@ -41,7 +48,6 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(loginData).subscribe({
       next: (response) => {
-        console.log('Login successful!', response);
         this.authService.setSession(response.user, response.token);
         this.messageService.add({
           severity: 'success',
@@ -56,6 +62,44 @@ export class LoginComponent implements OnInit {
           severity: 'error',
           summary: 'Login failed',
           detail: err.error.message,
+        });
+      },
+    });
+  }
+
+  resetPassword() {
+    if (this.resetUser.password !== this.resetUser.confirmPassword) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Wrong password',
+        detail: "Passwords don't match.",
+      });
+      return;
+    }
+
+    const resetData = {
+      username: this.resetUser.username,
+      email: this.resetUser.email,
+      password: this.resetUser.password,
+    };
+
+    this.authService.resetPassword(resetData).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Password reset',
+          detail: 'You can now log in with your new password.',
+        });
+        this.user.username = this.resetUser.username;
+        this.user.password = '';
+        this.resetUser = { username: '', email: '', password: '', confirmPassword: '' };
+        this.showResetPassword = false;
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Reset failed',
+          detail: err.error?.message || err.error?.error || 'Could not reset password.',
         });
       },
     });

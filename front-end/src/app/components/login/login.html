@@ -55,6 +55,86 @@
         Don't have an account?
         <a routerLink="/register" class="text-[#030e4e] hover:underline cursor-pointer font-bold">Sign Up</a>
       </p>
+
+      <button
+        pButton
+        type="button"
+        class="w-full bg-transparent border-none text-white hover:text-[#d48806] underline"
+        (click)="showResetPassword = !showResetPassword"
+      >
+        Forgot password?
+      </button>
     </form>
+
+    @if(showResetPassword){
+    <form #resetForm="ngForm" (ngSubmit)="resetPassword()" class="space-y-4 mt-8 border-t border-white/30 pt-6">
+      <h3 class="text-xl font-bold text-center">Reset Password</h3>
+
+      <div>
+        <label for="resetUsername" class="block text-sm font-medium mb-2 ml-2">Username</label>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="resetUser.username"
+          name="resetUsername"
+          id="resetUsername"
+          placeholder="Enter your username"
+          class="w-full h-12 px-4 border border-gray-600 focus:border-[#445ce3] outline-none"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="resetEmail" class="block text-sm font-medium mb-2 ml-2">Email</label>
+        <input
+          pInputText
+          type="email"
+          [(ngModel)]="resetUser.email"
+          name="resetEmail"
+          id="resetEmail"
+          placeholder="Enter your email"
+          class="w-full h-12 px-4 border border-gray-600 focus:border-[#445ce3] outline-none"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="newPassword" class="block text-sm font-medium mb-2 ml-2">New Password</label>
+        <input
+          pInputText
+          type="password"
+          [(ngModel)]="resetUser.password"
+          name="newPassword"
+          id="newPassword"
+          placeholder="Enter a new password"
+          class="w-full h-12 px-4 border border-gray-600 focus:border-[#445ce3] outline-none"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="confirmNewPassword" class="block text-sm font-medium mb-2 ml-2">Confirm New Password</label>
+        <input
+          pInputText
+          type="password"
+          [(ngModel)]="resetUser.confirmPassword"
+          name="confirmNewPassword"
+          id="confirmNewPassword"
+          placeholder="Confirm your new password"
+          class="w-full h-12 px-4 border border-gray-600 focus:border-[#445ce3] outline-none"
+          required
+        />
+      </div>
+
+      <button
+        pButton
+        type="submit"
+        [disabled]="resetForm.invalid"
+        class="w-full h-12 bg-[#d48806] hover:bg-[#9e6707] cursor-pointer transition-colors duration-200 text-lg font-semibold"
+      >
+        Reset Password
+      </button>
+    </form>
+    }
   </div>
 </div>

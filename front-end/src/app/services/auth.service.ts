@@ -33,6 +33,10 @@ export class AuthService {
     return this.http.post(ENDPOINTS.AUTH.LOGIN, credentials);
   }
 
+  resetPassword(resetData: any): Observable<any> {
+    return this.http.post(ENDPOINTS.AUTH.RESET_PASSWORD, resetData);
+  }
+
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
