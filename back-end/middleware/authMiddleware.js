@@ -1,5 +1,12 @@
 // middleware/authMiddleware.js
+import "dotenv/config";
 import jwt from "jsonwebtoken";
+
+const jwtSecret = process.env.JWT_SECRET;
+
+if (!jwtSecret) {
+  throw new Error("JWT_SECRET is required");
+}
 
 // Change 'module.exports =' to 'export default'
 export default (req, res, next) => {
@@ -9,8 +16,7 @@ export default (req, res, next) => {
     return res.status(401).json({ message: "No token, authorization denied" });
 
   try {
-    // Note: Make sure "secret_key_123" matches exactly what you used to SIGN the token in auth.js
-    const decoded = jwt.verify(token, "secret_key_123");
+    const decoded = jwt.verify(token, jwtSecret);
     req.user = decoded;
     next();
   } catch (err) {

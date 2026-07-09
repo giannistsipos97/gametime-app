@@ -13,14 +13,26 @@ dotenv.config();
 dns.setServers(["1.1.1.1"]);
 
 const app = express();
-app.use(cors());
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+const allowedOrigins = process.env.CORS_ORIGIN?.split(",").map((origin) =>
+  origin.trim(),
+);
+
+app.use(
+  cors({
+    origin: allowedOrigins?.length ? allowedOrigins : "http://localhost:4200",
+  }),
+);
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/library", libraryRoutes);
 
 const mongoUri = process.env.MONGO_URI;
+
+if (!mongoUri) {
+  throw new Error("MONGO_URI is required");
+}
 
 mongoose
   .connect(mongoUri)

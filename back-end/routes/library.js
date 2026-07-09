@@ -18,11 +18,12 @@ router.get("/", auth, async (req, res) => {
 // 2. Add a game to library
 router.post("/", auth, async (req, res) => {
   try {
-    // 1. Log the body to make sure Angular sent the data
-    console.log("Adding game for user:", req.user.id);
-    console.log("Game data:", req.body);
+    const { id, name } = req.body;
 
-    // 2. Create the game object (Ensure you aren't using 'newUser' here!)
+    if (!id || !name) {
+      return res.status(400).json({ message: "Game id and name are required" });
+    }
+
     const newGame = new Game({
       ...req.body, // Spread the title, thumbnail, id from Angular
       userId: req.user.id, // Use the ID from the decoded token
@@ -45,6 +46,10 @@ router.put("/sync/:rawgId", auth, async (req, res) => {
   try {
     const { rawgId } = req.params;
     const updateData = req.body;
+
+    if (!updateData.name) {
+      return res.status(400).json({ message: "Game name is required" });
+    }
 
     // The Magic: findOneAndUpdate
     // Filter: find by this RAWG ID and this specific User

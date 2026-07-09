@@ -18,5 +18,7 @@ const gameSchema = new mongoose.Schema({
   completedAt: { type: Date },
 });
 
+gameSchema.index({ userId: 1, id: 1 }, { unique: true });
+
 const Game = mongoose.model("Game", gameSchema);
 export default Game;
