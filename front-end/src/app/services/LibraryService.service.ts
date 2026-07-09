@@ -57,6 +57,11 @@ export class LibraryService {
         this.loadLibraryErrorShown = false;
       }),
       catchError((err) => {
+        if (err.status === 401) {
+          this.clear();
+          return of([]);
+        }
+
         if (!this.loadLibraryErrorShown) {
           this.messageService.add({
             severity: 'warn',

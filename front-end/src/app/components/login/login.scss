@@ -8,19 +8,12 @@
     background-color: #0e1330;
 
     background-size: cover;
-    background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
-    color: white; // Makes all default text readable against the dark bg
+    color: white;
   }
 
   .p-inputtext {
     border-radius: 20px;
-  }
-
-  @media (max-width: 670px) {
-    .container-form {
-      min-height: calc(100vh - 200px);
-    }
   }
 }

@@ -12,18 +12,15 @@ import { ConfirmationService } from 'primeng/api';
   imports: [RouterOutlet, HeaderComponent, FooterComponent, Toast, ConfirmDialogModule],
   providers: [ConfirmationService],
   template: `
-    <div class="flex flex-col h-screen">
-      <!-- FIXED HEADER -->
+    <div class="flex h-screen flex-col">
       <div class="fixed top-0 left-0 w-full z-50">
         <app-header />
       </div>
 
-      <!-- PAGE CONTENT (SCROLLABLE) -->
-      <div class="flex-1 overflow-y-auto pt-16">
-        <!-- pt-16 must match the header height -->
+      <main class="flex-1 overflow-y-auto pt-28 sm:pt-32 md:pt-20">
         <router-outlet />
         <p-toast></p-toast>
-      </div>
+      </main>
 
       <app-footer />
     </div>

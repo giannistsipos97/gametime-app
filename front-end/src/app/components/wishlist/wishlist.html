@@ -1,23 +1,22 @@
-<div class="flex flex-col w-full h-full p-6">
+<div class="gt-page">
   <p-dataView [value]="wishlistGames" layout="list" styleClass="w-full">
     <ng-template pTemplate="empty">
-      <div class="text-center text-gray-400 py-10 text-xl">
-        Your wishlist is empty ✨ <br />
+      <div class="rounded-2xl border border-dashed border-white/20 bg-[#0e1330] px-4 py-10 text-center text-xl text-gray-300">
+        Your wishlist is empty <br />
         Add some games to see them here!
       </div>
     </ng-template>
+
     <ng-template #list let-game>
       @for (game of wishlistGames; track game.id) {
-      <div
-        class="flex flex-col md:flex-row items-center justify-center gap-4 p-4 rounded-xl bg-[#0F172A] text-white shadow-md w-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-      >
-        <img [src]="game.background_image" alt="{{ game.name }}" class="w-72 h-44 object-cover rounded-md" />
+      <div class="gt-card mb-4 flex w-full flex-col items-stretch gap-4 p-4 sm:flex-row sm:items-center">
+        <img [src]="game.background_image" alt="{{ game.name }}" class="h-44 w-full rounded-md object-cover sm:w-56 lg:w-72" />
 
-        <div [routerLink]="['/gameDetails', game.id]" class="flex-1 flex flex-col gap-2 pl-4 cursor-pointer">
-          <h2 class="font-bold text-2xl">{{ game.name }}</h2>
+        <div [routerLink]="['/gameDetails', game.id]" class="flex min-w-0 flex-1 cursor-pointer flex-col gap-2 sm:pl-2">
+          <h2 class="line-clamp-2 text-xl font-bold sm:text-2xl">{{ game.name }}</h2>
 
-          <div class="flex flex-col gap-2 flex-wrap justify-center md:justify-start">
-            <div class="flex gap-2">
+          <div class="flex flex-col flex-wrap justify-center gap-2 md:justify-start">
+            <div class="flex flex-wrap gap-2">
               @for (platform of game.parent_platforms; track platform.platform.id) {
               <i
                 class="{{ platform.platform.name | platformIcon }}"
@@ -26,21 +25,21 @@
               ></i>
               }
             </div>
-            <div class="text-yellow-500 text-xl">
+            <div class="text-xl text-yellow-500">
               <i [ngClass]="game.rating < 5 ? 'fa-solid fa-star-half-stroke' : 'fa-solid fa-star'"></i>
               {{ game.rating }}
             </div>
           </div>
         </div>
 
-        <div class="flex flex-col gap-2 mt-4 md:mt-0">
+        <div class="flex w-full flex-col gap-2 sm:w-auto sm:min-w-40">
           @if(!libraryService.hasGame(game.id)){
-          <button pButton (click)="addToLibrary(game)">
+          <button pButton class="w-full justify-center" (click)="addToLibrary(game)">
             <i class="pi pi-plus mr-2"></i>
             Add to Library
           </button>
           }
-          <button pButton (click)="removeFromWishlist(game.id)">
+          <button pButton class="w-full justify-center" severity="secondary" (click)="removeFromWishlist(game.id)">
             <i class="pi pi-times mr-2"></i>
             Remove
           </button>

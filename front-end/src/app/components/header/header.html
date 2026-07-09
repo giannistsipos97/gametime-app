@@ -1,25 +1,20 @@
-<header class="bg-[#0e1330] text-white px-4 py-2 flex items-center">
-  <nav class="w-full flex items-center justify-between">
-    <!-- Left Section -->
-    <div class="flex items-center gap-2">
+<header class="bg-[#0e1330] text-white px-3 py-2 flex items-center sm:px-4">
+  <nav class="grid w-full grid-cols-[auto_1fr] items-center gap-2 sm:gap-3 md:grid-cols-[1fr_minmax(18rem,36rem)_1fr]">
+    <div class="flex min-w-0 items-center gap-2">
       <h1
-        class="font-pacman text-4xl text-[#e2a63f] tracking-tighter drop-shadow-[0_4px_0_rgba(0,0,0,1)] cursor-pointer hover:text-[#445ce3]"
+        class="hidden font-pacman text-[#e2a63f] tracking-tighter drop-shadow-[0_4px_0_rgba(0,0,0,1)] cursor-pointer hover:text-[#445ce3] sm:block sm:text-4xl"
         routerLink="/"
       >
         {{title}}
       </h1>
-      <img src="assets/images/gametimeIcon-primary.png" alt="Icon" class="w-14 h-14" />
+      <img routerLink="/" src="assets/images/gametimeIcon-primary.png" alt="Icon" class="h-10 w-10 cursor-pointer sm:h-14 sm:w-14" />
     </div>
 
-    <!-- Center Section (Search Bar) -->
-    <!-- Search bar centered -->
-    <div class="w-full max-w-xl">
+    <div class="col-span-2 row-start-2 w-full min-w-0 justify-self-center md:col-span-1 md:col-start-2 md:row-start-1 md:max-w-xl">
       <app-search class="w-full h-14"></app-search>
     </div>
 
-    <!-- Right Section -->
-    <div class="flex items-center gap-[15px] text-[25px] cursor-pointer">
-      <!-- <i pTooltip="Search" tooltipPosition="bottom" class="fa-solid fa-magnifying-glass hover:text-[#445ce3]"></i> -->
+    <div class="col-start-2 row-start-1 ml-auto flex shrink-0 items-center gap-2 text-lg cursor-pointer min-[380px]:text-xl sm:gap-[15px] sm:text-[25px] md:col-start-3">
       <i
         routerLink="/wishlist"
         pTooltip="WishList"
@@ -43,16 +38,9 @@
         icon="fa-solid fa-circle-user"
         [model]="userMenuItems"
         styleClass="p-button-raised p-button-secondary custom-split"
-        class="test-xl"
         (onClick)="router.navigate(['/profile'])"
       >
       </p-splitButton>
-      <!-- <i
-        routerLink="/register"
-        pTooltip="Register"
-        tooltipPosition="bottom"
-        class="fa-solid fa-user hover:text-[#445ce3]"
-      ></i> -->
       } @else{
       <i
         routerLink="/register"
@@ -63,7 +51,7 @@
       }
 
       <button
-        class="dark-mode-toggle w-10 h-10 text-2xl flex items-center justify-center rounded-lg transition-colors duration-200 hover:bg-gray-700"
+        class="dark-mode-toggle flex h-8 w-8 items-center justify-center rounded-lg text-lg transition-colors duration-200 hover:bg-gray-700 min-[380px]:text-xl sm:h-10 sm:w-10 sm:text-2xl"
         pTooltip="Dark Mode"
         tooltipPosition="bottom"
         (click)="toggleDarkMode()"

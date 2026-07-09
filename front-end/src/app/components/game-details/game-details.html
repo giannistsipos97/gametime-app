@@ -1,21 +1,18 @@
-<div class="flex flex-col w-full p-12">
+<div class="gt-page">
   @if(game){
-  <div class="relative w-full mt-4 p-4 rounded-3xl overflow-hidden">
-    <!-- Background Image -->
+  <div class="relative mt-2 w-full overflow-hidden rounded-2xl p-4 sm:p-6">
     <div
       class="absolute inset-0 bg-cover bg-center filter blur-lg opacity-30"
       [ngStyle]="{ 'background-image': 'url(' + game.background_image + ')' }"
     ></div>
 
-    <!-- Content Layer -->
-    <div class="relative flex flex-col md:flex-row gap-6">
-      <!-- Left Content -->
-      <div class="flex-1 flex flex-col pt-2 text-white">
-        <div class="flex gap-2 text-xl items-center">
-          <div class="border border-solid bg-white rounded-md text-black p-1 mr-2">
+    <div class="relative flex flex-col gap-6 lg:flex-row">
+      <div class="flex flex-1 flex-col pt-2 text-white">
+        <div class="flex flex-col gap-3 text-base sm:flex-row sm:items-center sm:text-xl">
+          <div class="w-fit rounded-md border border-solid bg-white p-1 text-black">
             {{ game.released | date: 'MMMM d, y' }}
           </div>
-          <div class="flex gap-2">
+          <div class="flex flex-wrap gap-2">
             @for (platform of game.parent_platforms; track $index) {
             <i class="{{ platform.platform.name | platformIcon }}"></i>
             }
@@ -23,7 +20,7 @@
         </div>
 
         <div class="pt-4">
-          <h1 class="text-5xl">{{ game.name }}</h1>
+          <h1 class="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">{{ game.name }}</h1>
         </div>
 
         @if(game.metacritic){
@@ -38,12 +35,12 @@
         </div>
         }
 
-        <div class="flex gap-2 pt-8 items-center">
+        <div class="flex flex-wrap items-center gap-2 pt-8">
           <button
             (click)="gameInLibrary ? removeFromLibrary() : addToLibrary(game)"
             pButton
-            class="played-btn h-11 text-sm rounded-full p-2 w-11"
-            [ngClass]="gameInLibrary ? 'bg-[#D48806] hover:bg-[#9e6707] border border-solid border-[#D48806]' : '!bg-transparent border border-solid hover:bg-[#D48806]' "
+            class="played-btn gt-icon-button h-11 w-11"
+            [ngClass]="gameInLibrary ? 'bg-[#D48806] hover:bg-[#9e6707] border-[#D48806]' : '!bg-transparent border-white/60 hover:bg-[#D48806]' "
           >
             <i class="fa-solid fa-bookmark text-xl" [pTooltip]="gameInLibrary ? 'In Library' : 'Add to Library'"></i>
           </button>
@@ -51,8 +48,8 @@
           @if(!gameInLibrary){
           <button
             pButton
-            class="played-btn h-11 text-sm rounded-full p-2 w-11"
-            [ngClass]="isWishlisted ? 'bg-[#8d1f1f] hover:bg-[#740e0e] border border-solid border-[#8d1f1f]' : '!bg-transparent border border-solid hover:bg-[#740e0e]' "
+            class="played-btn gt-icon-button h-11 w-11"
+            [ngClass]="isWishlisted ? 'bg-[#8d1f1f] hover:bg-[#740e0e] border-[#8d1f1f]' : '!bg-transparent border-white/60 hover:bg-[#740e0e]' "
             (click)="isWishlisted ? removeFromWishlist(game.id) : addToWishlist(game)"
           >
             <i
@@ -63,8 +60,8 @@
           }
           <button
             pButton
-            class="played-btn w-11 h-11 text-sm border border-solid rounded-full hover:bg-green-500"
-            [ngClass]="gameInLibrary?.played ? '!bg-green-600 hover:bg-red-700 border border-solid border-green-600' : '!bg-transparent border border-solid hover:bg-green-600'"
+            class="played-btn gt-icon-button h-11 w-11 hover:bg-green-500"
+            [ngClass]="gameInLibrary?.played ? '!bg-green-600 hover:bg-red-700 border-green-600' : '!bg-transparent border-white/60 hover:bg-green-600'"
             pTooltip="Add to Played"
             tooltipPosition="bottom"
             (click)="gameInLibrary?.played ? updatePlayed(game) : displayCompletedDialog = true"
@@ -83,42 +80,42 @@
           <i [class]="gameInLibrary?.platform | platformIcon"></i>
         </div>
         }
-        <div class="flex gap-2 pt-6">
+        <div class="flex flex-wrap gap-2 pt-6">
           @for(genre of game.genres; track $index){
           <p-tag [value]="genre.name" severity="secondary" class="w-18" [rounded]="true" />
           }
         </div>
       </div>
-      <div class="hidden md:block">
+      <div class="w-full lg:w-[38%] lg:max-w-[560px] xl:max-w-[620px]">
         <p-galleria
           [value]="screenshots"
           [circular]="true"
           [showItemNavigators]="screenshots.length > 1 ? true : false"
           [showThumbnails]="false"
-          [containerStyle]="{ 'max-width': '640px' }"
+          [containerStyle]="{ 'width': '100%' }"
           [numVisible]="5"
         >
           <ng-template pTemplate="item" let-screenshot>
-            <img [src]="screenshot.image" class="h-[350px] w-[650px]" />
+            <img [src]="screenshot.image" class="h-56 w-full rounded-xl object-cover sm:h-72 lg:h-[320px]" />
           </ng-template>
         </p-galleria>
       </div>
     </div>
   </div>
 
-  <div class="flex flex-col lg:flex-row justify-center gap-2 pt-8 h-full">
+  <div class="flex h-full flex-col justify-center gap-4 pt-6 lg:flex-row lg:pt-8">
     <div class="flex-[2]">
-      <p-panel header="Description" [styleClass]="'!rounded-3xl custom-panel'">
+      <p-panel header="Description" [styleClass]="'!rounded-2xl custom-panel'">
         <p><app-truncate-text [text]="game.description_raw | beforeSpanish" [limit]="1000"></app-truncate-text></p>
       </p-panel>
     </div>
 
     <div class="flex-[1]">
-      <p-panel header="Details" [styleClass]="'!rounded-3xl custom-panel'">
+      <p-panel header="Details" [styleClass]="'!rounded-2xl custom-panel'">
         <div class="flex flex-col gap-4">
           <div class="flex flex-col">
             <span class="underline">Official Website</span>
-            <a [href]="game.website" target="_blank" class="text-[#41a4f5] hover:text-[#145299]">{{game.website}}</a>
+            <a [href]="game.website" target="_blank" class="break-words text-[#41a4f5] hover:text-[#145299]">{{game.website}}</a>
           </div>
 
           <div class="flex flex-col">
@@ -156,7 +153,7 @@
               <a [href]="store.url" target="_blank">
                 <button
                   pButton
-                  class="bg-[#2D2D2D] border border-solid border-[#2D2D2D] hover:bg-[#0E1330] justify-center w-[150px] rounded-md p-2 flex items-center gap-2"
+                  class="flex w-full items-center justify-center gap-2 rounded-md border border-solid border-[#2D2D2D] bg-[#2D2D2D] p-2 hover:bg-[#0E1330] sm:w-[150px]"
                 >
                   <i class="{{ (store.url | findStoreByUrl).icon }}"></i>
                   <span>{{ (store.url | findStoreByUrl).name }}</span>

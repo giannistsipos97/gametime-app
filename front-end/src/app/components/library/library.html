@@ -1,18 +1,18 @@
-<div class="w-full calculateHeight mt-6 p-6">
-  <h2 class="text-3xl font-bold justify-self-center">My Library</h2>
+<div class="gt-page">
+  <h2 class="text-center text-2xl font-bold sm:text-3xl">My Library</h2>
 
-  <div class="flex justify-center p-4 gap-2">
+  <div class="mx-auto flex w-full max-w-2xl flex-col justify-center gap-3 py-5 sm:flex-row">
     <p-multiselect
       [options]="playedOptions"
       optionLabel="label"
       placeholder="Played"
-      styleClass="w-full md:w-56 !rounded-3xl"
+      styleClass="w-full sm:w-56 !rounded-3xl"
     />
     <p-multiselect
       [options]="platforms"
       placeholder="Select Platforms"
       optionLabel="label"
-      styleClass="w-full md:w-56 !rounded-3xl"
+      styleClass="w-full sm:w-56 !rounded-3xl"
       display="chip"
     >
       <ng-template let-platform pTemplate="item">
@@ -26,22 +26,22 @@
 
   @if (libraryGames$ | async; as libraryGames) {
     @if (libraryGames.length > 0) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         @for (game of libraryGames; track trackGame(game)) {
           <p-card
-            class="bg-[#070e35] cursor-pointer rounded-xl border border-[#16223d] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+            class="gt-card cursor-pointer"
           >
             <ng-template #header>
               <img
                 [routerLink]="['/gameDetails', game.id]"
-                class="w-full h-44 object-cover"
+                class="h-44 w-full object-cover"
                 [src]="game.background_image"
                 [alt]="game.name"
               />
             </ng-template>
 
             <ng-template #title>
-              <div class="flex justify-between items-center">
+              <div class="flex items-center justify-between">
                 <span [routerLink]="['/gameDetails', game.id]" class="text-lg font-bold line-clamp-1">
                   {{ game.name }}
                 </span>
@@ -49,16 +49,16 @@
             </ng-template>
 
             <ng-template #subtitle>
-              <div class="flex justify-between items-center mt-2">
-                <div class="font-medium">
+              <div class="mt-3 flex items-center justify-between gap-3">
+                <div class="gt-on-surface shrink-0 font-medium">
                   {{ game.rating }}
                   <i class="pi pi-star-fill text-yellow-500"></i>
                 </div>
-                <div>
+                <div class="flex shrink-0 items-center gap-1">
                   <button
                     pButton
-                    class="mr-1 text-black bg-white w-8 h-8 text-sm rounded-full"
-                    [ngClass]="game.playNext ? '!bg-[#D48806] hover:!bg-yellow-900 border border-solid border-[#D48806]' : '!bg-white border border-solid hover:!bg-[#D48806]'"
+                    class="gt-icon-button text-black"
+                    [ngClass]="game.playNext ? '!bg-[#D48806] hover:!bg-yellow-900 border-[#D48806]' : '!bg-white border-slate-400 hover:!bg-[#D48806]'"
                     pTooltip="Add to Play Next"
                     tooltipPosition="bottom"
                     (click)="confirmPlayNext(game)"
@@ -67,7 +67,7 @@
                   </button>
                   <button
                     pButton
-                    class="mr-1 text-black bg-white border border-solid border-red-700 hover:bg-red-700 w-8 h-8 text-sm rounded-full"
+                    class="gt-icon-button border-red-700 bg-white text-black hover:bg-red-700"
                     pTooltip="Remove from Library"
                     tooltipPosition="bottom"
                     (click)="confirmDelete(game)"
@@ -76,8 +76,8 @@
                   </button>
                   <button
                     pButton
-                    class="mr-1 text-black w-8 h-8 text-sm rounded-full"
-                    [ngClass]="game.played ? '!bg-green-600 hover:!bg-green-950 border border-solid border-green-600' : '!bg-white border border-solid hover:!bg-green-600'"
+                    class="gt-icon-button text-black"
+                    [ngClass]="game.played ? '!bg-green-600 hover:!bg-green-950 border-green-600' : '!bg-white border-slate-400 hover:!bg-green-600'"
                     pTooltip="Add to Played"
                     tooltipPosition="bottom"
                     (click)="game.played ? removedFromPlayed(game) : displayDialog(game)"
@@ -91,8 +91,8 @@
         }
       </div>
     } @else {
-      <div class="flex justify-center items-center h-full">
-        <h2 class="text-[40px]">Your library is empty</h2>
+      <div class="flex min-h-80 items-center justify-center rounded-2xl border border-dashed border-white/20 bg-[#0e1330] p-8 text-center">
+        <h2 class="text-2xl font-bold text-white/80 sm:text-4xl">Your library is empty</h2>
       </div>
     }
   }

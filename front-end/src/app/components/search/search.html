@@ -1,39 +1,36 @@
-<div class="relative inline-block w-full max-w-xl">
-  <!-- Search Input -->
+<div class="relative w-full">
   <input
     type="text"
     pInputText
     placeholder="Search for games..."
     [(ngModel)]="searchQuery"
     (ngModelChange)="onSearch($event)"
-    class="w-full h-14 px-6 text-lg rounded-full border-none outline-none"
+    class="w-full h-12 px-5 pr-10 text-base !rounded-full border-none outline-none sm:h-14 sm:px-6 sm:pr-12 sm:text-lg"
   />
 
   @if(searchQuery){
   <i
     (click)="clearSearch()"
-    class="fa-regular fa-circle-xmark cursor-pointer text-xl absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+    class="fa-regular fa-circle-xmark cursor-pointer text-lg absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white sm:right-4 sm:text-xl"
   ></i>
   } @else{
-  <i class="fas fa-search absolute text-xl right-6 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+  <i class="fas fa-search absolute text-lg right-4 top-1/2 transform -translate-y-1/2 text-gray-400 sm:right-6 sm:text-xl"></i>
   }
 
-  <!-- Dropdown Panel -->
   @if(data?.length){
   <div
-    class="absolute left-1/2 transform -translate-x-1/2 mt-1 bg-[#0e1330] shadow-lg rounded-lg max-h-[42rem] overflow-y-auto z-50 w-[700px]"
+    class="absolute left-0 right-0 z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-xl border border-white/10 bg-[#0e1330] shadow-2xl md:left-1/2 md:right-auto md:w-[min(700px,calc(100vw-2rem))] md:-translate-x-1/2"
   >
     @for(game of data; track game.id){
     <div
       (click)="selectGame(game)"
-      class="p-5 hover:bg-[#163e8c] cursor-pointer flex justify-between items-center gap-5 border-b border-gray-600 last:border-b-0"
+      class="flex cursor-pointer items-center justify-between gap-3 border-b border-white/10 p-3 transition-colors last:border-b-0 hover:bg-[#163e8c] sm:gap-5 sm:p-5"
     >
-      <!-- Left: Image + Name -->
-      <div class="flex items-center gap-5" [routerLink]="['/gameDetails', game.id]">
-        <img [src]="game.background_image" class="w-24 h-24 rounded-md" />
-        <div class="flex flex-col gap-2">
-          <span class="text-lg font-semibold text-white">{{ game.name }}</span>
-          <span class="text-gray-300 text-sm flex items-center gap-3">
+      <div class="flex min-w-0 items-center gap-3 sm:gap-5" [routerLink]="['/gameDetails', game.id]">
+        <img [src]="game.background_image" [alt]="game.name" class="h-16 w-16 rounded-md object-cover sm:h-24 sm:w-24" />
+        <div class="flex min-w-0 flex-col gap-2">
+          <span class="line-clamp-2 text-base font-semibold text-white sm:text-lg">{{ game.name }}</span>
+          <span class="flex flex-wrap items-center gap-3 text-sm text-gray-300">
             @for(platform of game.parent_platforms; track platform.platform.id;){
             <ng-container>
               <i [class]="platform.platform.name | platformIcon" [pTooltip]="platform.platform.name"></i>
@@ -43,11 +40,10 @@
         </div>
       </div>
 
-      <!-- Right: Ratings + Platforms -->
-      <div class="flex flex-col items-end gap-1">
+      <div class="shrink-0">
         <button
           pButton
-          class="mr-1 text-black !bg-[#D48806] border border-solid !border-[#D48806] w-8 h-8 text-sm rounded-full"
+          class="gt-icon-button !border-[#D48806] !bg-[#D48806] text-black hover:!bg-[#9e6707]"
           [pTooltip]="libraryIds.has(game.id) ? 'Already in library' : 'Add to Library'"
           tooltipPosition="bottom"
           [disabled]="libraryIds.has(game.id)"

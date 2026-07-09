@@ -2,30 +2,75 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import 'primeicons/primeicons.css';
 
-* {
-  outline: none;
+html,
+body {
+  min-height: 100%;
+  color: #111827;
 }
 
-/* Light mode (default) */
+html.my-app-dark body {
+  color: #ffffff;
+}
+
+*:focus-visible {
+  outline: 2px solid #d48806;
+  outline-offset: 2px;
+}
+
+@layer components {
+  .gt-page {
+    @apply w-full px-4 py-6 sm:px-6 lg:px-8;
+  }
+
+  .gt-card {
+    @apply overflow-hidden rounded-xl shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+  }
+
+  .gt-icon-button {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-full border border-solid text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .gt-section-scroll {
+    @apply w-full overflow-x-auto pb-2;
+  }
+}
+
+.gt-card .p-card {
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.08);
+}
+
+.gt-card .p-card-subtitle,
+.gt-on-surface {
+  color: #111827;
+}
+
+html.my-app-dark .gt-card .p-card {
+  border-color: #1e3a8a;
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 0 0 1px rgb(30 58 138 / 0.2);
+}
+
+html.my-app-dark .gt-card .p-card-subtitle,
+html.my-app-dark .gt-on-surface {
+  color: #ffffff;
+}
+
 button.dark-mode-toggle {
   background-color: #1a4fae;
   color: white;
 }
 
-button.dark-mode-toggle:hover {
-  background-color: #163e8c;
-}
-
-/* Dark mode */
+button.dark-mode-toggle:hover,
 html.my-app-dark button.dark-mode-toggle {
-  background-color: #f39c12; /* example: orange */
-  color: black;
-}
-
-html.my-app-dark button.dark-mode-toggle:hover {
   background-color: #d48806;
+  color: black;
 }
 
 /* hide default scrollbar */

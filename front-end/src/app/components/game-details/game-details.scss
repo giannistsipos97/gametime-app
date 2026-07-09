@@ -7,10 +7,9 @@
   }
 
   ::ng-deep .custom-panel .p-panel-title {
-    font-size: 25px; /* Tailwind font size */
+    font-size: clamp(1.125rem, 2vw, 1.5rem);
   }
 
-  /* Default icon */
   .played-btn i {
     transition: 0.2s ease;
   }
